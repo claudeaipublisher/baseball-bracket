@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pitching Scouting Reports</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#0f1f3d;--blue:#2253a8;--blue-light:#dce8fb;
+  --green:#1a6b3a;--green-light:#d6f0e0;
+  --amber:#8a5000;--amber-light:#fef3d0;
+  --red:#9b1c1c;--red-light:#fde8e8;
+  --gray:#4a5568;--gray-light:#f4f5f7;
+  --border:#dde2ea;--text:#1a202c;--text-muted:#64748b;--text-light:#94a3b8;
+  --white:#ffffff;--page-bg:#f0f3f8;
+  --wolves-navy:#1a0a2e;--wolves-purple:#5b21b6;--wolves-purple-light:#ede9fe;
+}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--page-bg);color:var(--text);font-size:13px;line-height:1.5;padding:0;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+.page{max-width:960px;margin:0 auto;padding:32px 24px;}
+.tab-nav{background:var(--navy);padding:0 24px;display:flex;align-items:flex-end;gap:4px;max-width:960px;margin:0 auto;}
+.tab-btn{padding:12px 24px;font-size:13px;font-weight:600;font-family:'IBM Plex Sans',sans-serif;border:none;cursor:pointer;border-radius:6px 6px 0 0;transition:background 0.15s;color:rgba(255,255,255,0.6);background:transparent;}
+.tab-btn:hover{color:rgba(255,255,255,0.9);background:rgba(255,255,255,0.08);}
+.tab-btn.active-dawgs{background:#ffffff;color:var(--navy);}
+.tab-btn.active-wolves{background:#5b21b6;color:#ffffff;}
+.tab-btn.active-summary{background:#f59e0b;color:#1a0a2e;}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+.report-header-dawgs{background:var(--navy);color:white;padding:24px 28px;border-radius:10px;margin-bottom:20px;display:flex;align-items:flex-start;justify-content:space-between;}
+.report-header-wolves{background:var(--wolves-navy);color:white;padding:24px 28px;border-radius:10px;margin-bottom:20px;display:flex;align-items:flex-start;justify-content:space-between;border-top:4px solid var(--wolves-purple);}
+.report-header-summary{background:linear-gradient(135deg,var(--navy) 50%,#2d1060);color:white;padding:24px 28px;border-radius:10px;margin-bottom:20px;display:flex;align-items:flex-start;justify-content:space-between;border-top:4px solid #f59e0b;}
+.report-title{font-size:20px;font-weight:600;color:white;margin-bottom:4px;}
+.report-sub{font-size:12px;color:rgba(255,255,255,0.6);}
+.report-meta{text-align:right;font-size:11px;color:rgba(255,255,255,0.5);}
+.report-meta strong{display:block;color:rgba(255,255,255,0.85);font-size:13px;margin-bottom:2px;}
+.framework-box{background:var(--blue-light);border-left:3px solid var(--blue);border-radius:6px;padding:12px 16px;margin-bottom:14px;font-size:12px;color:#1a3a7a;line-height:1.65;}
+.framework-box strong{display:block;color:#0f2d6b;margin-bottom:3px;font-size:12px;}
+.framework-box-wolves{background:var(--wolves-purple-light);border-left:3px solid var(--wolves-purple);border-radius:6px;padding:12px 16px;margin-bottom:14px;font-size:12px;color:#3b1591;line-height:1.65;}
+.framework-box-wolves strong{display:block;color:#2e1065;margin-bottom:3px;font-size:12px;}
+.caveat{background:var(--amber-light);border-left:3px solid #c97a00;border-radius:6px;padding:12px 16px;margin-bottom:20px;font-size:12px;color:var(--amber);line-height:1.6;}
+.caveat strong{display:block;color:#6b3d00;margin-bottom:3px;font-size:12px;}
+.section-label{font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-light);margin-bottom:10px;}
+.data-table{width:100%;border-collapse:collapse;font-size:11.5px;margin-bottom:8px;}
+.data-table th{font-size:9.5px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;padding:6px 6px;text-align:right;background:var(--gray-light);border-bottom:1px solid var(--border);position:relative;}
+.data-table th:first-child{text-align:left;border-radius:6px 0 0 0;}
+.data-table th:last-child{border-radius:0 6px 0 0;}
+.data-table td{padding:7px 6px;text-align:right;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle;background:var(--white);}
+.data-table td:first-child{text-align:left;font-weight:500;}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table tr:hover td{background:#f8faff;}
+.val-good{color:var(--green);font-weight:600;}
+.val-bad{color:var(--red);font-weight:600;}
+.val-mid{color:var(--amber);font-weight:600;}
+th[data-tip]{cursor:default;position:relative;}
+th[data-tip]::after{content:attr(data-tip);position:absolute;bottom:125%;left:50%;transform:translateX(-50%);background:#1a202c;color:#fff;font-size:10px;font-weight:400;white-space:nowrap;padding:4px 8px;border-radius:4px;pointer-events:none;opacity:0;transition:opacity 0.15s;z-index:100;letter-spacing:0;text-transform:none;}
+th[data-tip]:hover::after{opacity:1;}
+th.sortable{cursor:pointer;user-select:none;}
+th.sortable:hover{background:#e8ecf2;}
+th.sort-asc,th.sort-desc{background:#dce8fb;color:var(--blue);}
+.bar-wrap{display:flex;align-items:center;gap:5px;justify-content:flex-end;}
+.bar-bg{width:40px;height:5px;background:var(--gray-light);border-radius:3px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:3px;}
+.pill{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap;}
+.pill-green{background:var(--green-light);color:var(--green);}
+.pill-blue{background:var(--blue-light);color:var(--blue);}
+.pill-amber{background:var(--amber-light);color:var(--amber);}
+.pill-red{background:var(--red-light);color:var(--red);}
+.pill-gray{background:var(--gray-light);color:var(--gray);}
+.pill-purple{background:var(--wolves-purple-light);color:var(--wolves-purple);}
+.player-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;}
+.player-card{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:16px;page-break-inside:avoid;}
+.player-card.recommended{border:2px solid var(--green);}
+.player-card.recommended-wolves{border:2px solid var(--wolves-purple);}
+.player-card.full-width{grid-column:1 / -1;}
+.player-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;gap:8px;}
+.player-name{font-size:15px;font-weight:600;color:var(--navy);}
+.player-sub{font-size:11px;color:var(--text-muted);margin-top:2px;}
+.command-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px;background:var(--gray-light);border-radius:8px;padding:8px;}
+.cmd-item{text-align:center;}
+.cmd-val{font-size:14px;font-weight:600;font-family:'IBM Plex Mono',monospace;}
+.cmd-lbl{font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-top:1px;}
+.cmd-weight{font-size:8px;color:var(--text-light);margin-top:2px;font-style:italic;}
+.stat-mini-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px;}
+.stat-mini{background:var(--gray-light);border-radius:6px;padding:6px 8px;text-align:center;}
+.stat-mini-val{font-size:14px;font-weight:600;color:var(--navy);font-family:'IBM Plex Mono',monospace;}
+.stat-mini-lbl{font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em;margin-top:2px;}
+.score-bar-wrap{margin-bottom:10px;}
+.score-label{font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;display:flex;justify-content:space-between;}
+.score-track{height:8px;background:var(--gray-light);border-radius:4px;overflow:hidden;}
+.score-fill-dawgs{height:100%;background:#2253a8;border-radius:4px;}
+.score-fill-wolves{height:100%;background:#5b21b6;border-radius:4px;}
+.opp-section-lbl{font-size:9px;font-weight:600;color:var(--text-light);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px;}
+.opp-table{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:10px;}
+.opp-table th{font-size:9px;font-weight:600;color:var(--text-light);text-transform:uppercase;letter-spacing:0.06em;padding:4px 6px;text-align:left;border-bottom:1px solid var(--border);}
+.opp-table th:last-child{text-align:right;}
+.opp-table td{padding:4px 6px;color:var(--text-muted);border-bottom:1px solid #f0f3f8;}
+.opp-table td:last-child{text-align:right;}
+.opp-table tr:last-child td{border-bottom:none;}
+.tier-top{color:var(--red);font-weight:600;}
+.tier-mid{color:var(--amber);font-weight:600;}
+.tier-bot{color:var(--green);font-weight:600;}
+.blurb{font-size:11.5px;color:var(--text-muted);line-height:1.65;margin-bottom:12px;}
+.rec-box{border-radius:6px;padding:10px 12px;}
+.rec-box.yes{background:var(--green-light);}
+.rec-box.watch{background:var(--amber-light);}
+.rec-box.no{background:var(--red-light);}
+.rec-box.insuf{background:var(--gray-light);}
+.rec-title{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:3px;}
+.rec-title.yes{color:var(--green);}
+.rec-title.watch{color:var(--amber);}
+.rec-title.no{color:var(--red);}
+.rec-title.insuf{color:var(--gray);}
+.rec-main{font-size:12px;font-weight:600;}
+.rec-main.yes{color:var(--green);}
+.rec-main.watch{color:var(--amber);}
+.rec-main.no{color:var(--red);}
+.rec-main.insuf{color:var(--gray);}
+.rec-detail{font-size:11px;margin-top:3px;}
+.rec-detail.yes{color:#2a7a4a;}
+.rec-detail.watch{color:#7a5500;}
+.rec-detail.no{color:#8b1c1c;}
+.rec-detail.insuf{color:var(--text-muted);}
+.sum-card{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:13px 14px;transition:box-shadow 0.15s,transform 0.1s;position:relative;cursor:pointer;}
+.sum-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.1);transform:translateY(-1px);}
+.sum-rank{position:absolute;top:10px;right:12px;font-size:11px;font-weight:600;color:var(--text-light);background:var(--gray-light);border-radius:20px;padding:1px 7px;font-family:'IBM Plex Mono',monospace;}
+.sum-header{margin-bottom:8px;padding-right:36px;}
+.sum-name{font-size:13px;font-weight:600;color:var(--navy);}
+.sum-num{font-size:11px;font-weight:400;color:var(--text-muted);}
+.sum-team{font-size:10px;font-weight:500;margin-top:2px;margin-bottom:4px;}
+.dawgs-tag{color:var(--blue);}
+.wolves-tag{color:var(--wolves-purple);}
+.sum-cmd{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;background:var(--gray-light);border-radius:6px;padding:6px;margin-bottom:6px;}
+.sum-cmd-item{text-align:center;}
+.sum-val{font-size:11px;font-weight:600;font-family:'IBM Plex Mono',monospace;}
+.sum-lbl{font-size:7.5px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em;}
+.sum-wt{font-size:7px;color:var(--text-light);font-style:italic;}
+.sum-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:6px;}
+.sum-stat-item{background:var(--gray-light);border-radius:4px;padding:4px 6px;text-align:center;}
+.sum-stat-val{font-size:12px;font-weight:600;font-family:'IBM Plex Mono',monospace;color:var(--navy);}
+.sum-stat-lbl{font-size:7.5px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em;}
+.sum-score-wrap{margin-bottom:6px;}
+.sum-score-track{height:5px;background:var(--gray-light);border-radius:3px;overflow:hidden;margin-top:2px;}
+.sum-rec{font-size:10px;font-weight:600;padding:4px 8px;border-radius:5px;}
+.sum-rec.yes{background:var(--green-light);color:var(--green);}
+.sum-rec.watch{background:var(--amber-light);color:var(--amber);}
+.sum-rec.no{background:var(--red-light);color:var(--red);}
+.sum-rec.insuf{background:var(--gray-light);color:var(--gray);}
+.metrics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;}
+.metric-card{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:14px 16px;}
+.metric-value{font-size:24px;font-weight:600;color:var(--navy);font-family:'IBM Plex Mono',monospace;}
+.metric-label{font-size:11px;color:var(--text-muted);margin-bottom:4px;}
+.metric-sub{font-size:10px;color:var(--text-light);margin-top:3px;}
+.metric-sub.warn{color:var(--red);}
+.metric-sub.good{color:var(--green);}
+.divider{border:none;border-top:1px solid var(--border);margin:20px 0;}
+.benchmark-note{font-size:10px;color:var(--text-light);margin-top:6px;}
+.bottom-line-dawgs{background:var(--navy);color:rgba(255,255,255,0.75);border-radius:8px;padding:16px 20px;font-size:12.5px;line-height:1.7;}
+.bottom-line-dawgs strong{color:white;}
+.bottom-line-wolves{background:var(--wolves-navy);color:rgba(255,255,255,0.75);border-radius:8px;padding:16px 20px;font-size:12.5px;line-height:1.7;border-top:3px solid var(--wolves-purple);}
+.bottom-line-wolves strong{color:white;}
+.bottom-line-summary{background:linear-gradient(135deg,var(--navy) 50%,#2d1060);color:rgba(255,255,255,0.75);border-radius:8px;padding:16px 20px;font-size:12.5px;line-height:1.7;border-top:3px solid #f59e0b;}
+.bottom-line-summary strong{color:white;}
+@media print{body{padding:16px;background:white;}.player-card{page-break-inside:avoid;}.tab-nav{display:none;}.tab-content{display:block !important;page-break-before:always;}}
+</style>
+</head>
+<body>
+<div class="tab-nav">
+  <button class="tab-btn active-dawgs" onclick="showTab('dawgs',this)">Under Dawgs 12U</button>
+  <button class="tab-btn" onclick="showTab('wolves',this)">Wolves</button>
+  <button class="tab-btn" onclick="showTab('summary',this)">Combined Summary</button>
+</div>
+
+<div id="tab-dawgs" class="tab-content active">
+<div class="page">
+  <div class="report-header-dawgs">
+    <div><div class="report-title">Under Dawgs 12U &mdash; Pitching Scouting Report</div><div class="report-sub">4 games &middot; Mar 29 &amp; Apr 12 &middot; 5 pitchers evaluated &middot; Weighted scoring</div></div>
+    <div class="report-meta"><strong>Prepared for head coach</strong>Kid pitch &middot; 12U competitive league</div>
+  </div>
+  <div class="framework-box">
+    <strong>Evaluation framework &mdash; weighted command scoring out of 100</strong>
+    Strike% (40pts &mdash; most important) &middot; K/BB ratio (20pts) &middot; WP/IP (20pts) &middot; ERA (20pts, capped at 20.00). ERA weighted lowest due to defense and opponent dependency. Jax Jenkins and Matt K scored but listed separately due to insufficient innings.
+  </div>
+  <div class="caveat">
+    <strong>Important context &mdash; opponent quality</strong>
+    League standings incorporated for each opponent. ERA in particular is sensitive to opponent quality &mdash; all recommendations should be read with this in mind.
+  </div>
+  <div class="section-label">Opponents faced &mdash; league standings</div>
+  <table class="data-table" style="margin-bottom:20px;">
+    <thead><tr>
+      <th style="width:28%;" data-tip="Opponent team name">Opponent</th>
+      <th data-tip="Wins">W</th><th data-tip="Losses">L</th><th data-tip="Ties">T</th><th data-tip="Win percentage">PCT</th>
+      <th style="width:12%;" data-tip="Strength tier">Tier</th>
+      <th style="width:30%;text-align:left;padding-left:8px;" data-tip="UD pitchers who faced this team">UD pitchers faced</th>
+    </tr></thead>
+    <tbody>
+      <tr><td>WVAC Nukes 12U</td><td>6</td><td>1</td><td>1</td><td>0.813</td><td><span class="tier-top">Top tier</span></td><td style="text-align:left;padding-left:8px;font-size:11px;color:var(--text-muted);">Liam S, Tripp A, Matt K</td></tr>
+      <tr><td>STORM 12U</td><td>5</td><td>3</td><td>0</td><td>0.625</td><td><span class="tier-mid">Mid-upper</span></td><td style="text-align:left;padding-left:8px;font-size:11px;color:var(--text-muted);">Roman G, Tripp A</td></tr>
+      <tr><td>SOBR 12U Rams</td><td>3</td><td>4</td><td>1</td><td>0.438</td><td><span class="tier-mid">Mid-lower</span></td><td style="text-align:left;padding-left:8px;font-size:11px;color:var(--text-muted);">Liam S, Roman G, Caiden R</td></tr>
+      <tr><td>ABA Cobra 12U</td><td>0</td><td>6</td><td>0</td><td>0.000</td><td><span class="tier-bot">Bottom</span></td><td style="text-align:left;padding-left:8px;font-size:11px;color:var(--text-muted);">Tripp A, Caiden R</td></tr>
+    </tbody>
+  </table>
+  <div class="divider"></div>
+  <div class="section-label">Individual player scouting cards &mdash; ranked by weighted score</div>
+  <div class="player-grid">
+
+    <div class="player-card recommended" id="card-roman">
+      <div class="player-header">
+        <div><div class="player-name">Roman G <span style="font-size:11px;font-weight:400;color:var(--text-muted);">#18</span></div><div class="player-sub">2.2 IP &middot; 2 games &middot; #1 Under Dawgs &middot; #7 combined &middot; Score: 57.2</div></div>
+        <span class="pill pill-green">Best on staff</span>
+      </div>
+      <div class="score-bar-wrap"><div class="score-label"><span>Score: 57.2 / 100</span><span style="color:var(--text-light);">Str%x40 + K/BBx20 + WP/IPx20 + ERAx20</span></div><div class="score-track"><div class="score-fill-dawgs" style="width:57.2%;"></div></div></div>
+      <div class="command-bar">
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--green);">56%</div><div class="cmd-lbl">Strike%</div><div class="cmd-weight">wt: 40</div></div>
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--green);">1.00</div><div class="cmd-lbl">K/BB</div><div class="cmd-weight">wt: 20</div></div>
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--amber);">0.38</div><div class="cmd-lbl">WP/IP</div><div class="cmd-weight">wt: 20</div></div>
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--red);">10.13</div><div class="cmd-lbl">ERA</div><div class="cmd-weight">wt: 20</div></div>
+      </div>
+      <div class="section-label" style="margin-bottom:5px;">Supporting stats</div>
+      <div class="stat-mini-grid">
+        <div class="stat-mini"><div class="stat-mini-val">2.2</div><div class="stat-mini-lbl">IP</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">6</div><div class="stat-mini-lbl">Hits</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">2</div><div class="stat-mini-lbl">Walks</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">2</div><div class="stat-mini-lbl">SO</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">1</div><div class="stat-mini-lbl">WP</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">3.000</div><div class="stat-mini-lbl">WHIP</div></div>
+      </div>
+      <div class="opp-section-lbl">Opponents faced</div>
+      <table class="opp-table"><thead><tr><th>Opponent</th><th>Record</th><th>Tier</th><th>IP</th><th>Outcome</th></tr></thead>
+      <tbody>
+        <tr><td>SOBR 12U Rams</td><td>3-4-1</td><td><span class="tier-mid">Mid-lower</span></td><td>0.2</td><td>L 4&ndash;11</td></tr>
+        <tr><td>STORM 12U</td><td>5-3</td><td><span class="tier-mid">Mid-upper</span></td><td>2.0</td><td>L 4&ndash;9</td></tr>
+      </tbody></table>
+      <div class="blurb">Highest weighted score on the Under Dawgs staff at 57.2. Strike% of 56% clears the 55% target and K/BB of 1.00 meets benchmark. WP/IP of 0.38 is manageable. ERA of 10.13 hurts the score but runs came from contact against mid-tier opponents, not command failures. Small sample of 2.2 IP means more innings are needed to draw firm conclusions.</div>
+      <div class="rec-box yes"><div class="rec-title yes">Recommendation</div><div class="rec-main yes">Recommend &mdash; best weighted score on Under Dawgs staff</div><div class="rec-detail yes">Strike% above target. ERA reflects contact vs mid-tier opponents. Needs more innings.</div></div>
+    </div>
+
+    <div class="player-card" id="card-liam">
+      <div class="player-header">
+        <div><div class="player-name">Liam S <span style="font-size:11px;font-weight:400;color:var(--text-muted);">#33</span></div><div class="player-sub">4.0 IP &middot; 2 games &middot; #2 Under Dawgs &middot; #8 combined &middot; Score: 48.4</div></div>
+        <span class="pill pill-blue">Solid command</span>
+      </div>
+      <div class="score-bar-wrap"><div class="score-label"><span>Score: 48.4 / 100</span><span style="color:var(--text-light);">Str%x40 + K/BBx20 + WP/IPx20 + ERAx20</span></div><div class="score-track"><div class="score-fill-dawgs" style="width:48.4%;"></div></div></div>
+      <div class="command-bar">
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--amber);">53%</div><div class="cmd-lbl">Strike%</div><div class="cmd-weight">wt: 40</div></div>
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--amber);">0.67</div><div class="cmd-lbl">K/BB</div><div class="cmd-weight">wt: 20</div></div>
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--green);">0.00</div><div class="cmd-lbl">WP/IP</div><div class="cmd-weight">wt: 20</div></div>
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--red);">18.00</div><div class="cmd-lbl">ERA</div><div class="cmd-weight">wt: 20</div></div>
+      </div>
+      <div class="section-label" style="margin-bottom:5px;">Supporting stats</div>
+      <div class="stat-mini-grid">
+        <div class="stat-mini"><div class="stat-mini-val">4.0</div><div class="stat-mini-lbl">IP</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">7</div><div class="stat-mini-lbl">Hits</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">3</div><div class="stat-mini-lbl">Walks</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">2</div><div class="stat-mini-lbl">SO</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">0</div><div class="stat-mini-lbl">WP</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">2.500</div><div class="stat-mini-lbl">WHIP</div></div>
+      </div>
+      <div class="opp-section-lbl">Opponents faced</div>
+      <table class="opp-table"><thead><tr><th>Opponent</th><th>Record</th><th>Tier</th><th>IP</th><th>Outcome</th></tr></thead>
+      <tbody>
+        <tr><td>WVAC Nukes 12U</td><td>6-1-1</td><td><span class="tier-top">Top tier</span></td><td>2.0</td><td>L 7&ndash;12</td></tr>
+        <tr><td>SOBR 12U Rams</td><td>3-4-1</td><td><span class="tier-mid">Mid-lower</span></td><td>2.0</td><td>L 4&ndash;11</td></tr>
+      </tbody></table>
+      <div class="blurb">Zero wild pitches is a genuine strength and he pitched the most innings on the staff against the toughest opponents including top-tier WVAC. ERA of 18.00 drops him to #2 under the weighted system but reflects facing the hardest schedule on the team. Strike% of 53% and K/BB of 0.67 both need improvement. ERA score should be read in full opponent context.</div>
+      <div class="rec-box watch"><div class="rec-title watch">Recommendation</div><div class="rec-main watch">Watch &mdash; zero WP, ERA reflects tough schedule</div><div class="rec-detail watch">Most innings vs toughest opponents. Strike% and K/BB are the areas to develop.</div></div>
+    </div>
+
+    <div class="player-card" id="card-tripp">
+      <div class="player-header">
+        <div><div class="player-name">Tripp A <span style="font-size:11px;font-weight:400;color:var(--text-muted);">#3</span></div><div class="player-sub">3.2 IP &middot; 3 games &middot; #3 Under Dawgs &middot; #9 combined &middot; Score: 43.1</div></div>
+        <span class="pill pill-amber">Command concern</span>
+      </div>
+      <div class="score-bar-wrap"><div class="score-label"><span>Score: 43.1 / 100</span><span style="color:var(--text-light);">Str%x40 + K/BBx20 + WP/IPx20 + ERAx20</span></div><div class="score-track"><div class="score-fill-dawgs" style="width:43.1%;"></div></div></div>
+      <div class="command-bar">
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--amber);">53%</div><div class="cmd-lbl">Strike%</div><div class="cmd-weight">wt: 40</div></div>
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--amber);">0.63</div><div class="cmd-lbl">K/BB</div><div class="cmd-weight">wt: 20</div></div>
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--red);">1.36</div><div class="cmd-lbl">WP/IP</div><div class="cmd-weight">wt: 20</div></div>
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--green);">4.91</div><div class="cmd-lbl">ERA</div><div class="cmd-weight">wt: 20</div></div>
+      </div>
+      <div class="section-label" style="margin-bottom:5px;">Supporting stats</div>
+      <div class="stat-mini-grid">
+        <div class="stat-mini"><div class="stat-mini-val">3.2</div><div class="stat-mini-lbl">IP</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">2</div><div class="stat-mini-lbl">Hits</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">8</div><div class="stat-mini-lbl">Walks</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">5</div><div class="stat-mini-lbl">SO</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">5</div><div class="stat-mini-lbl">WP</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">2.727</div><div class="stat-mini-lbl">WHIP</div></div>
+      </div>
+      <div class="opp-section-lbl">Opponents faced</div>
+      <table class="opp-table"><thead><tr><th>Opponent</th><th>Record</th><th>Tier</th><th>IP</th><th>Outcome</th></tr></thead>
+      <tbody>
+        <tr><td>WVAC Nukes 12U</td><td>6-1-1</td><td><span class="tier-top">Top tier</span></td><td>0.2</td><td>L 7&ndash;12</td></tr>
+        <tr><td>ABA Cobra 12U</td><td>0-6</td><td><span class="tier-bot">Bottom</span></td><td>1.0</td><td>W 8&ndash;2</td></tr>
+        <tr><td>STORM 12U</td><td>5-3</td><td><span class="tier-mid">Mid-upper</span></td><td>2.0</td><td>L 4&ndash;9</td></tr>
+      </tbody></table>
+      <div class="blurb">ERA of 4.91 is the best on the Under Dawgs staff and scores well under the weighted system. However WP/IP of 1.36 is the worst on the team &mdash; 5 wild pitches in 3.2 IP advances every baserunner for free. Eight walks combined with 5 wild pitches is an unsustainable command profile. The ERA is real but does not offset the damage caused by walks and wild pitches.</div>
+      <div class="rec-box no"><div class="rec-title no">Recommendation</div><div class="rec-main no">Do not recommend at this time</div><div class="rec-detail no">WP/IP of 1.36 worst on staff. 8 walks and 5 wild pitches in 3.2 IP gifting baserunners consistently.</div></div>
+    </div>
+
+    <div class="player-card" id="card-caiden">
+      <div class="player-header">
+        <div><div class="player-name">Caiden R <span style="font-size:11px;font-weight:400;color:var(--text-muted);">#21</span></div><div class="player-sub">3.2 IP &middot; 2 games &middot; #4 Under Dawgs &middot; #10 combined &middot; Score: 36.9</div></div>
+        <span class="pill pill-red">Poor command</span>
+      </div>
+      <div class="score-bar-wrap"><div class="score-label"><span>Score: 36.9 / 100</span><span style="color:var(--text-light);">Str%x40 + K/BBx20 + WP/IPx20 + ERAx20</span></div><div class="score-track"><div class="score-fill-dawgs" style="width:36.9%;"></div></div></div>
+      <div class="command-bar">
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--amber);">53%</div><div class="cmd-lbl">Strike%</div><div class="cmd-weight">wt: 40</div></div>
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--amber);">0.63</div><div class="cmd-lbl">K/BB</div><div class="cmd-weight">wt: 20</div></div>
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--red);">1.09</div><div class="cmd-lbl">WP/IP</div><div class="cmd-weight">wt: 20</div></div>
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--red);">14.73</div><div class="cmd-lbl">ERA</div><div class="cmd-weight">wt: 20</div></div>
+      </div>
+      <div class="section-label" style="margin-bottom:5px;">Supporting stats</div>
+      <div class="stat-mini-grid">
+        <div class="stat-mini"><div class="stat-mini-val">3.2</div><div class="stat-mini-lbl">IP</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">4</div><div class="stat-mini-lbl">Hits</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">8</div><div class="stat-mini-lbl">Walks</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">5</div><div class="stat-mini-lbl">SO</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">4</div><div class="stat-mini-lbl">WP</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">3.273</div><div class="stat-mini-lbl">WHIP</div></div>
+      </div>
+      <div class="opp-section-lbl">Opponents faced</div>
+      <table class="opp-table"><thead><tr><th>Opponent</th><th>Record</th><th>Tier</th><th>IP</th><th>Outcome</th></tr></thead>
+      <tbody>
+        <tr><td>SOBR 12U Rams</td><td>3-4-1</td><td><span class="tier-mid">Mid-lower</span></td><td>1.2</td><td>L 4&ndash;11</td></tr>
+        <tr><td>ABA Cobra 12U</td><td>0-6</td><td><span class="tier-bot">Bottom</span></td><td>2.0</td><td>W 8&ndash;2</td></tr>
+      </tbody></table>
+      <div class="blurb">Lowest weighted score among ranked Under Dawgs pitchers at 36.9. Three of four indicators are poor &mdash; ERA of 14.73 against bottom-half opponents, WP/IP of 1.09, and 8 walks in 3.2 IP. Best outing came against the last-place team and he has never faced a top-tier opponent. Strikeout total is the one positive but does not offset command failures at this level.</div>
+      <div class="rec-box no"><div class="rec-title no">Recommendation</div><div class="rec-main no">Do not recommend at this time</div><div class="rec-detail no">Three of four indicators red or amber. Poor ERA against weakest opponents only. Command must improve significantly.</div></div>
+    </div>
+
+    <div class="player-card full-width" id="card-mattk">
+      <div class="player-header">
+        <div><div class="player-name">Matt K <span style="font-size:11px;font-weight:400;color:var(--text-muted);">#13</span></div><div class="player-sub">0.2 IP &middot; 1 game &middot; insufficient sample &middot; score 26.9 for reference only</div></div>
+        <span class="pill pill-gray">Limited sample</span>
+      </div>
+      <div class="command-bar" style="max-width:560px;">
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--red);">42%</div><div class="cmd-lbl">Strike%</div><div class="cmd-weight">wt: 40</div></div>
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--red);">0.00</div><div class="cmd-lbl">K/BB</div><div class="cmd-weight">wt: 20</div></div>
+        <div class="cmd-item"><div class="cmd-val">0.00</div><div class="cmd-lbl">WP/IP</div><div class="cmd-weight">wt: 20</div></div>
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--red);">54.00</div><div class="cmd-lbl">ERA (capped)</div><div class="cmd-weight">wt: 20</div></div>
+      </div>
+      <div class="section-label" style="margin-bottom:5px;margin-top:10px;">Supporting stats</div>
+      <div class="stat-mini-grid" style="grid-template-columns:repeat(6,1fr);">
+        <div class="stat-mini"><div class="stat-mini-val">0.2</div><div class="stat-mini-lbl">IP</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">3</div><div class="stat-mini-lbl">Hits</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">2</div><div class="stat-mini-lbl">Walks</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">0</div><div class="stat-mini-lbl">SO</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">0</div><div class="stat-mini-lbl">WP</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">7.500</div><div class="stat-mini-lbl">WHIP</div></div>
+      </div>
+      <div class="opp-section-lbl" style="margin-top:10px;">Opponents faced</div>
+      <table class="opp-table" style="max-width:500px;margin-bottom:10px;"><thead><tr><th>Opponent</th><th>Record</th><th>Tier</th><th>IP</th><th>Outcome</th></tr></thead>
+      <tbody><tr><td>WVAC Nukes 12U</td><td>6-1-1</td><td><span class="tier-top">Top tier</span></td><td>0.2</td><td>L 7&ndash;12</td></tr></tbody></table>
+      <div class="blurb">One appearance of 2 outs against the toughest team in the league. ERA of 54.00 is a direct artifact of the tiny sample and capped at 20.00 for scoring. No ranking or recommendation is possible until he has pitched in at least 2&ndash;3 more appearances across varied competition.</div>
+      <div class="rec-box insuf"><div class="rec-title insuf">Recommendation</div><div class="rec-main insuf">No decision &mdash; insufficient data</div><div class="rec-detail insuf">0.2 IP vs toughest opponent. Need 2&ndash;3 more outings.</div></div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="section-label">Complete statistical breakdown &mdash; ranked by weighted score</div>
+  <table class="data-table">
+    <thead><tr>
+      <th style="width:12%;" data-tip="Pitcher name">Pitcher</th>
+      <th data-tip="Weighted score out of 100">Score</th>
+      <th data-tip="Innings Pitched">IP</th><th data-tip="Hits allowed">H</th><th data-tip="Earned Runs">ER</th>
+      <th data-tip="Walks (Base on Balls)">BB</th><th data-tip="Strikeouts">SO</th><th data-tip="Wild Pitches">WP</th>
+      <th data-tip="Earned Run Average weight 20">ERA</th><th data-tip="Walks and Hits per Inning Pitched">WHIP</th>
+      <th data-tip="Strike Percentage weight 40 target 55 plus">Str%</th>
+      <th data-tip="Strikeout to Walk ratio weight 20">K/BB</th>
+      <th data-tip="Wild Pitches per Inning Pitched weight 20">WP/IP</th>
+      <th style="width:14%;text-align:left;padding-left:8px;" data-tip="Opponents faced">Opponents</th>
+    </tr></thead>
+    <tbody>
+      <tr><td>Roman G #18</td><td class="val-good">57.2</td><td>2.2</td><td>6</td><td>3</td><td>2</td><td>2</td><td>1</td><td class="val-bad">10.13</td><td class="val-bad">3.000</td><td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:86%;background:#1a6b3a;"></div></div>56%</div></td><td>1.00</td><td class="val-mid">0.38</td><td style="text-align:left;padding-left:8px;font-size:10px;color:var(--text-muted);">SOBR .438 &middot; STORM .625</td></tr>
+      <tr><td>Liam S #33</td><td>48.4</td><td>4.0</td><td>7</td><td>8</td><td>3</td><td>2</td><td>0</td><td class="val-bad">18.00</td><td class="val-bad">2.500</td><td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:82%;background:#8a5000;"></div></div>53%</div></td><td class="val-mid">0.67</td><td class="val-good">0.00</td><td style="text-align:left;padding-left:8px;font-size:10px;color:var(--text-muted);">WVAC .813 &middot; SOBR .438</td></tr>
+      <tr><td>Tripp A #3</td><td>43.1</td><td>3.2</td><td>2</td><td>2</td><td>8</td><td>5</td><td>5</td><td>4.91</td><td class="val-bad">2.727</td><td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:82%;background:#8a5000;"></div></div>53%</div></td><td class="val-mid">0.63</td><td class="val-bad">1.36</td><td style="text-align:left;padding-left:8px;font-size:10px;color:var(--text-muted);">WVAC .813 &middot; ABA .000 &middot; STORM .625</td></tr>
+      <tr><td>Caiden R #21</td><td>36.9</td><td>3.2</td><td>4</td><td>6</td><td>8</td><td>5</td><td>4</td><td class="val-bad">14.73</td><td class="val-bad">3.273</td><td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:82%;background:#8a5000;"></div></div>53%</div></td><td class="val-mid">0.63</td><td class="val-bad">1.09</td><td style="text-align:left;padding-left:8px;font-size:10px;color:var(--text-muted);">SOBR .438 &middot; ABA .000</td></tr>
+      <tr><td>Matt K #13 *</td><td style="color:var(--text-light);">26.9*</td><td>0.2</td><td>3</td><td>4</td><td>2</td><td>0</td><td>0</td><td class="val-bad">54.00</td><td class="val-bad">7.500</td><td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:65%;background:#e24b4a;"></div></div>42%</div></td><td class="val-bad">0.00</td><td>0.00</td><td style="text-align:left;padding-left:8px;font-size:10px;color:var(--text-muted);">WVAC .813 only</td></tr>
+    </tbody>
+  </table>
+  <div class="benchmark-note"><span style="color:var(--green);font-weight:600;">Green</span> = strong &nbsp;|&nbsp; <span style="color:var(--amber);font-weight:600;">Amber</span> = borderline &nbsp;|&nbsp; <span style="color:var(--red);font-weight:600;">Red</span> = below benchmark &nbsp;|&nbsp; * insufficient sample &nbsp;|&nbsp; ERA capped at 20.00 for scoring</div>
+
+  <div class="divider"></div>
+  <div class="section-label">Team summary &mdash; all 4 games</div>
+  <div class="metrics-grid">
+    <div class="metric-card"><div class="metric-label">Total innings pitched</div><div class="metric-value">14.1</div><div class="metric-sub">across 4 games</div></div>
+    <div class="metric-card"><div class="metric-label">Total walks issued</div><div class="metric-value">25</div><div class="metric-sub warn">6.3 per game</div></div>
+    <div class="metric-card"><div class="metric-label">Team strike%</div><div class="metric-value">53%</div><div class="metric-sub warn">target: 55%+</div></div>
+    <div class="metric-card"><div class="metric-label">Season record</div><div class="metric-value">1&ndash;3</div><div class="metric-sub">command driving losses</div></div>
+  </div>
+  <div class="bottom-line-dawgs">
+    <strong>Bottom line &mdash;</strong> <strong>Roman G</strong> leads with score 57.2. <strong>Liam S</strong> at 48.4 is penalized by ERA but faced the toughest schedule &mdash; zero wild pitches and durability are genuine assets. <strong>Tripp A</strong> at 43.1 has a decent ERA but WP/IP of 1.36 remains a serious liability. <strong>Caiden R</strong> at 36.9 scores lowest with three of four indicators below benchmark. <strong>Matt K</strong> needs more appearances.
+  </div>
+</div>
+</div>
+
+<div id="tab-wolves" class="tab-content">
+<div class="page">
+  <div class="report-header-wolves">
+    <div><div class="report-title">Wolves &mdash; Pitching Scouting Report</div><div class="report-sub">Full season stats &middot; 8 pitchers evaluated &middot; Weighted command scoring out of 100</div></div>
+    <div class="report-meta"><strong>Prepared for head coach</strong>Kid pitch &middot; 12U competitive league</div>
+  </div>
+  <div class="framework-box-wolves">
+    <strong>Evaluation framework &mdash; Strike%x40 + K/BBx20 + WP/IPx20 + ERAx20 = 100pts</strong>
+    Full season aggregate is more reliable than the Under Dawgs 4-game sample. Advanced metrics referenced in notes where they add context beyond the four primary indicators. Opponent quality data not available for this dataset. ERA capped at 20.00 to prevent outliers distorting the scale.
+  </div>
+  <div class="divider"></div>
+  <div class="section-label">Individual player scouting cards &mdash; ranked by weighted score</div>
+  <div class="player-grid">
+
+    <div class="player-card recommended-wolves" id="card-abe">
+      <div class="player-header">
+        <div><div class="player-name">Abe Hoffman <span style="font-size:11px;font-weight:400;color:var(--text-muted);">#21</span></div><div class="player-sub">5.0 IP &middot; 2 GP &middot; #1 Wolves &middot; #1 combined &middot; Score: 97.3</div></div>
+        <span class="pill pill-purple">Elite &mdash; #1 overall</span>
+      </div>
+      <div class="score-bar-wrap"><div class="score-label"><span>Score: 97.3 / 100</span><span style="color:var(--text-light);">Str%x40 + K/BBx20 + WP/IPx20 + ERAx20</span></div><div class="score-track"><div class="score-fill-wolves" style="width:97.3%;"></div></div></div>
+      <div class="command-bar">
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--green);">64.6%</div><div class="cmd-lbl">Strike%</div><div class="cmd-weight">wt: 40</div></div>
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--green);">4.00</div><div class="cmd-lbl">K/BB</div><div class="cmd-weight">wt: 20</div></div>
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--green);">0.20</div><div class="cmd-lbl">WP/IP</div><div class="cmd-weight">wt: 20</div></div>
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--green);">.000</div><div class="cmd-lbl">ERA</div><div class="cmd-weight">wt: 20</div></div>
+      </div>
+      <div class="section-label" style="margin-bottom:5px;">Supporting stats</div>
+      <div class="stat-mini-grid">
+        <div class="stat-mini"><div class="stat-mini-val">5.0</div><div class="stat-mini-lbl">IP</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">1</div><div class="stat-mini-lbl">Hits</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">3</div><div class="stat-mini-lbl">Walks</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">12</div><div class="stat-mini-lbl">SO</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">1</div><div class="stat-mini-lbl">WP</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">.800</div><div class="stat-mini-lbl">WHIP</div></div>
+      </div>
+      <div class="blurb">Near-perfect weighted score of 97.3 &mdash; leads both rosters across all four indicators. Best Strike% at 64.6%, best K/BB at 4.00, zero ERA with only 1 hit allowed in 5.0 IP. FPSO% of 91.7% from advanced data confirms he converts first pitch strikes into outs at a rare rate. Clear standout at this level.</div>
+      <div class="rec-box yes"><div class="rec-title yes">Recommendation</div><div class="rec-main yes">Highly recommend &mdash; #1 overall across both rosters</div><div class="rec-detail yes">97.3/100. All four indicators green. Genuine standout at this level.</div></div>
+    </div>
+
+    <div class="player-card" id="card-mateo">
+      <div class="player-header">
+        <div><div class="player-name">Mateo Castillo <span style="font-size:11px;font-weight:400;color:var(--text-muted);">#24</span></div><div class="player-sub">6.0 IP &middot; 3 GP &middot; #2 Wolves &middot; #2 combined &middot; Score: 80.2</div></div>
+        <span class="pill pill-green">Strong &mdash; #2 overall</span>
+      </div>
+      <div class="score-bar-wrap"><div class="score-label"><span>Score: 80.2 / 100</span><span style="color:var(--text-light);">Str%x40 + K/BBx20 + WP/IPx20 + ERAx20</span></div><div class="score-track"><div class="score-fill-wolves" style="width:80.2%;"></div></div></div>
+      <div class="command-bar">
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--green);">59.4%</div><div class="cmd-lbl">Strike%</div><div class="cmd-weight">wt: 40</div></div>
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--green);">2.40</div><div class="cmd-lbl">K/BB</div><div class="cmd-weight">wt: 20</div></div>
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--green);">0.17</div><div class="cmd-lbl">WP/IP</div><div class="cmd-weight">wt: 20</div></div>
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--green);">2.000</div><div class="cmd-lbl">ERA</div><div class="cmd-weight">wt: 20</div></div>
+      </div>
+      <div class="section-label" style="margin-bottom:5px;">Supporting stats</div>
+      <div class="stat-mini-grid">
+        <div class="stat-mini"><div class="stat-mini-val">6.0</div><div class="stat-mini-lbl">IP</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">2</div><div class="stat-mini-lbl">Hits</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">5</div><div class="stat-mini-lbl">Walks</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">12</div><div class="stat-mini-lbl">SO</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">1</div><div class="stat-mini-lbl">WP</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">1.167</div><div class="stat-mini-lbl">WHIP</div></div>
+      </div>
+      <div class="blurb">All four indicators green with score of 80.2. Best WP/IP on the Wolves staff at 0.17. Strong K/BB of 2.40 and only 2 hits in 6.0 IP across three starts demonstrates durability. FPSO% of 78.6% confirms he converts first pitch strikes to outs at a high rate, keeping pitch counts efficient.</div>
+      <div class="rec-box yes"><div class="rec-title yes">Recommendation</div><div class="rec-main yes">Recommend &mdash; #2 overall, durable and effective</div><div class="rec-detail yes">80.2/100. All four indicators green. Best WP/IP on staff. 2 hits in 6 IP.</div></div>
+    </div>
+
+    <div class="player-card" id="card-jp">
+      <div class="player-header">
+        <div><div class="player-name">JP Anderson <span style="font-size:11px;font-weight:400;color:var(--text-muted);">#11</span></div><div class="player-sub">7.0 IP &middot; 3 GP &middot; #3 Wolves &middot; #3 combined &middot; Score: 77.6</div></div>
+        <span class="pill pill-green">Strong &mdash; #3 overall</span>
+      </div>
+      <div class="score-bar-wrap"><div class="score-label"><span>Score: 77.6 / 100</span><span style="color:var(--text-light);">Str%x40 + K/BBx20 + WP/IPx20 + ERAx20</span></div><div class="score-track"><div class="score-fill-wolves" style="width:77.6%;"></div></div></div>
+      <div class="command-bar">
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--green);">59.1%</div><div class="cmd-lbl">Strike%</div><div class="cmd-weight">wt: 40</div></div>
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--green);">2.25</div><div class="cmd-lbl">K/BB</div><div class="cmd-weight">wt: 20</div></div>
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--green);">0.29</div><div class="cmd-lbl">WP/IP</div><div class="cmd-weight">wt: 20</div></div>
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--green);">1.714</div><div class="cmd-lbl">ERA</div><div class="cmd-weight">wt: 20</div></div>
+      </div>
+      <div class="section-label" style="margin-bottom:5px;">Supporting stats</div>
+      <div class="stat-mini-grid">
+        <div class="stat-mini"><div class="stat-mini-val">7.0</div><div class="stat-mini-lbl">IP</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">3</div><div class="stat-mini-lbl">Hits</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">4</div><div class="stat-mini-lbl">Walks</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">9</div><div class="stat-mini-lbl">SO</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">2</div><div class="stat-mini-lbl">WP</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">1.000</div><div class="stat-mini-lbl">WHIP</div></div>
+      </div>
+      <div class="blurb">All four indicators green with the most innings on the Wolves staff at 7.0. ERA of 1.714 and WHIP of 1.000 are excellent. Scores just below Mateo Castillo due to slightly higher WP/IP of 0.29. FPS% of 41.4% from advanced data flags that he starts behind in the count more often than his results show &mdash; improving first pitch strikes would make him even more effective.</div>
+      <div class="rec-box yes"><div class="rec-title yes">Recommendation</div><div class="rec-main yes">Recommend &mdash; #3 overall, most innings on Wolves staff</div><div class="rec-detail yes">77.6/100. All four indicators green. Getting ahead on first pitch more consistently would elevate him further.</div></div>
+    </div>
+
+    <div class="player-card" id="card-maddox">
+      <div class="player-header">
+        <div><div class="player-name">Maddox Montejano <span style="font-size:11px;font-weight:400;color:var(--text-muted);">#1 IP on staff</span></div><div class="player-sub">9.2 IP &middot; 4 GP &middot; #4 Wolves &middot; #4 combined &middot; Score: 73.9</div></div>
+        <span class="pill pill-green">Good &mdash; #4 overall</span>
+      </div>
+      <div class="score-bar-wrap"><div class="score-label"><span>Score: 73.9 / 100</span><span style="color:var(--text-light);">Str%x40 + K/BBx20 + WP/IPx20 + ERAx20</span></div><div class="score-track"><div class="score-fill-wolves" style="width:73.9%;"></div></div></div>
+      <div class="command-bar">
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--green);">55.0%</div><div class="cmd-lbl">Strike%</div><div class="cmd-weight">wt: 40</div></div>
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--green);">1.60</div><div class="cmd-lbl">K/BB</div><div class="cmd-weight">wt: 20</div></div>
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--green);">0.00</div><div class="cmd-lbl">WP/IP</div><div class="cmd-weight">wt: 20</div></div>
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--green);">.000</div><div class="cmd-lbl">ERA</div><div class="cmd-weight">wt: 20</div></div>
+      </div>
+      <div class="section-label" style="margin-bottom:5px;">Supporting stats</div>
+      <div class="stat-mini-grid">
+        <div class="stat-mini"><div class="stat-mini-val">9.2</div><div class="stat-mini-lbl">IP</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">10</div><div class="stat-mini-lbl">Hits</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">5</div><div class="stat-mini-lbl">Walks</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">8</div><div class="stat-mini-lbl">SO</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">0</div><div class="stat-mini-lbl">WP</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">1.552</div><div class="stat-mini-lbl">WHIP</div></div>
+      </div>
+      <div class="blurb">All four indicators green with the most innings across both staffs at 9.2 IP. Zero wild pitches and zero ERA demonstrate durability and reliability. K/BB of 1.60 is solid. Scores below the top three primarily because Strike% of 55% sits at the minimum threshold. FIP of 3.202 from advanced data suggests defense may be carrying some of the zero ERA &mdash; worth monitoring as competition increases.</div>
+      <div class="rec-box yes"><div class="rec-title yes">Recommendation</div><div class="rec-main yes">Recommend &mdash; #4 overall, durable workhorse</div><div class="rec-detail yes">73.9/100. All four indicators green. Most innings across both rosters. FIP warrants monitoring.</div></div>
+    </div>
+
+    <div class="player-card" id="card-jack">
+      <div class="player-header">
+        <div><div class="player-name">Jack Briola <span style="font-size:11px;font-weight:400;color:var(--text-muted);">#23</span></div><div class="player-sub">4.0 IP &middot; 3 GP &middot; #5 Wolves &middot; #5 combined &middot; Score: 60.6</div></div>
+        <span class="pill pill-amber">Watch &mdash; #5 overall</span>
+      </div>
+      <div class="score-bar-wrap"><div class="score-label"><span>Score: 60.6 / 100</span><span style="color:var(--text-light);">Str%x40 + K/BBx20 + WP/IPx20 + ERAx20</span></div><div class="score-track"><div class="score-fill-wolves" style="width:60.6%;"></div></div></div>
+      <div class="command-bar">
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--amber);">52.4%</div><div class="cmd-lbl">Strike%</div><div class="cmd-weight">wt: 40</div></div>
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--amber);">0.60</div><div class="cmd-lbl">K/BB</div><div class="cmd-weight">wt: 20</div></div>
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--green);">0.00</div><div class="cmd-lbl">WP/IP</div><div class="cmd-weight">wt: 20</div></div>
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--green);">4.500</div><div class="cmd-lbl">ERA</div><div class="cmd-weight">wt: 20</div></div>
+      </div>
+      <div class="section-label" style="margin-bottom:5px;">Supporting stats</div>
+      <div class="stat-mini-grid">
+        <div class="stat-mini"><div class="stat-mini-val">4.0</div><div class="stat-mini-lbl">IP</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">3</div><div class="stat-mini-lbl">Hits</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">5</div><div class="stat-mini-lbl">Walks</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">3</div><div class="stat-mini-lbl">SO</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">0</div><div class="stat-mini-lbl">WP</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">2.000</div><div class="stat-mini-lbl">WHIP</div></div>
+      </div>
+      <div class="blurb">Zero wild pitches and ERA of 4.50 give him good scores on two of four indicators. Strike% of 52.4% and K/BB of 0.60 both fall below their benchmarks. Used exclusively in relief. His &lt;3% of 55% from advanced data is best on the Wolves staff &mdash; he tends to get early contact which limits pitch count damage despite the walk problem.</div>
+      <div class="rec-box watch"><div class="rec-title watch">Recommendation</div><div class="rec-main watch">Watch &mdash; zero WP and decent ERA, K/BB must improve</div><div class="rec-detail watch">60.6/100. Zero wild pitches and good ERA points. Strike% and K/BB below benchmark.</div></div>
+    </div>
+
+    <div class="player-card" id="card-cuinn">
+      <div class="player-header">
+        <div><div class="player-name">Cuinn Crews <span style="font-size:11px;font-weight:400;color:var(--text-muted);">#17</span></div><div class="player-sub">2.0 IP &middot; 1 GP &middot; #6 Wolves &middot; #6 combined &middot; Score: 59.7</div></div>
+        <span class="pill pill-amber">Borderline &mdash; #6 overall</span>
+      </div>
+      <div class="score-bar-wrap"><div class="score-label"><span>Score: 59.7 / 100</span><span style="color:var(--text-light);">Str%x40 + K/BBx20 + WP/IPx20 + ERAx20</span></div><div class="score-track"><div class="score-fill-wolves" style="width:59.7%;"></div></div></div>
+      <div class="command-bar">
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--green);">57.8%</div><div class="cmd-lbl">Strike%</div><div class="cmd-weight">wt: 40</div></div>
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--red);">0.33</div><div class="cmd-lbl">K/BB</div><div class="cmd-weight">wt: 20</div></div>
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--green);">0.00</div><div class="cmd-lbl">WP/IP</div><div class="cmd-weight">wt: 20</div></div>
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--red);">12.00</div><div class="cmd-lbl">ERA</div><div class="cmd-weight">wt: 20</div></div>
+      </div>
+      <div class="section-label" style="margin-bottom:5px;">Supporting stats</div>
+      <div class="stat-mini-grid">
+        <div class="stat-mini"><div class="stat-mini-val">2.0</div><div class="stat-mini-lbl">IP</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">4</div><div class="stat-mini-lbl">Hits</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">3</div><div class="stat-mini-lbl">Walks</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">1</div><div class="stat-mini-lbl">SO</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">0</div><div class="stat-mini-lbl">WP</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">3.500</div><div class="stat-mini-lbl">WHIP</div></div>
+      </div>
+      <div class="blurb">Strike% of 57.8% earns meaningful points at the 40-point weight and zero WP helps. However K/BB of 0.33 is very poor &mdash; walking far more batters than striking out &mdash; and ERA of 12.00 reflects it. Only 2.0 IP in one appearance makes this a small sample. Scores just below Briola due to poor K/BB despite better Strike%.</div>
+      <div class="rec-box no"><div class="rec-title no">Recommendation</div><div class="rec-main no">Do not recommend at this time</div><div class="rec-detail no">59.7/100. Good Strike% undermined by K/BB of 0.33 and ERA of 12.00 in a 2 IP sample.</div></div>
+    </div>
+
+    <div class="player-card" id="card-david">
+      <div class="player-header">
+        <div><div class="player-name">David Garton <span style="font-size:11px;font-weight:400;color:var(--text-muted);">#1</span></div><div class="player-sub">2.0 IP &middot; 2 GP &middot; #7 Wolves &middot; #11 combined &middot; Score: 8.7</div></div>
+        <span class="pill pill-red">Poor command &mdash; #11 overall</span>
+      </div>
+      <div class="score-bar-wrap"><div class="score-label"><span>Score: 8.7 / 100</span><span style="color:var(--text-light);">Str%x40 + K/BBx20 + WP/IPx20 + ERAx20</span></div><div class="score-track"><div class="score-fill-wolves" style="width:8.7%;"></div></div></div>
+      <div class="command-bar">
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--red);">37.3%</div><div class="cmd-lbl">Strike%</div><div class="cmd-weight">wt: 40</div></div>
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--red);">0.14</div><div class="cmd-lbl">K/BB</div><div class="cmd-weight">wt: 20</div></div>
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--red);">1.50</div><div class="cmd-lbl">WP/IP</div><div class="cmd-weight">wt: 20</div></div>
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--red);">12.00</div><div class="cmd-lbl">ERA</div><div class="cmd-weight">wt: 20</div></div>
+      </div>
+      <div class="section-label" style="margin-bottom:5px;">Supporting stats</div>
+      <div class="stat-mini-grid">
+        <div class="stat-mini"><div class="stat-mini-val">2.0</div><div class="stat-mini-lbl">IP</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">3</div><div class="stat-mini-lbl">Hits</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">7</div><div class="stat-mini-lbl">Walks</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">1</div><div class="stat-mini-lbl">SO</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">3</div><div class="stat-mini-lbl">WP</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">5.000</div><div class="stat-mini-lbl">WHIP</div></div>
+      </div>
+      <div class="blurb">Lowest weighted score across both rosters at 8.7 &mdash; all four indicators red. Strike% of 37.3% means nearly two thirds of pitches are balls. Seven walks and 3 wild pitches in 2.0 innings means the offense does not need to earn a single run. Significant command development needed before he can be a reliable option.</div>
+      <div class="rec-box no"><div class="rec-title no">Recommendation</div><div class="rec-main no">Do not recommend &mdash; lowest score across both rosters</div><div class="rec-detail no">8.7/100. All four indicators red. Command must be the development focus.</div></div>
+    </div>
+
+    <div class="player-card" id="card-jax">
+      <div class="player-header">
+        <div><div class="player-name">Jax Jenkins <span style="font-size:11px;font-weight:400;color:var(--text-muted);">#75</span></div><div class="player-sub">1.0 IP &middot; 1 GP &middot; insufficient sample &middot; score 85.9 for reference only</div></div>
+        <span class="pill pill-gray">Limited sample</span>
+      </div>
+      <div class="command-bar" style="max-width:560px;">
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--green);">63.2%</div><div class="cmd-lbl">Strike%</div><div class="cmd-weight">wt: 40</div></div>
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--green);">2.00</div><div class="cmd-lbl">K/BB</div><div class="cmd-weight">wt: 20</div></div>
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--green);">0.00</div><div class="cmd-lbl">WP/IP</div><div class="cmd-weight">wt: 20</div></div>
+        <div class="cmd-item"><div class="cmd-val" style="color:var(--green);">.000</div><div class="cmd-lbl">ERA</div><div class="cmd-weight">wt: 20</div></div>
+      </div>
+      <div class="section-label" style="margin-bottom:5px;margin-top:10px;">Supporting stats</div>
+      <div class="stat-mini-grid" style="grid-template-columns:repeat(6,1fr);">
+        <div class="stat-mini"><div class="stat-mini-val">1.0</div><div class="stat-mini-lbl">IP</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">0</div><div class="stat-mini-lbl">Hits</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">1</div><div class="stat-mini-lbl">Walks</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">2</div><div class="stat-mini-lbl">SO</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">0</div><div class="stat-mini-lbl">WP</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">1.000</div><div class="stat-mini-lbl">WHIP</div></div>
+      </div>
+      <div class="blurb">Score of 85.9 would rank him #2 overall but 1.0 IP is not enough data for that to be meaningful. Every indicator from this single inning is positive. He should be given more appearances immediately. If these numbers hold over 4&ndash;5 innings he becomes a very significant asset on this staff.</div>
+      <div class="rec-box insuf"><div class="rec-title insuf">Recommendation</div><div class="rec-main insuf">No decision &mdash; score 85.9 on 1.0 IP only</div><div class="rec-detail insuf">Every indicator positive. Get him more appearances as soon as possible.</div></div>
+    </div>
+
+  </div>
+
+  <div class="divider"></div>
+  <div class="section-label">Complete statistical breakdown &mdash; ranked by weighted score</div>
+  <table class="data-table">
+    <thead><tr>
+      <th style="width:14%;" data-tip="Pitcher name">Pitcher</th>
+      <th data-tip="Weighted score out of 100">Score</th>
+      <th data-tip="Innings Pitched">IP</th><th data-tip="Games Pitched">GP</th>
+      <th data-tip="Walks (Base on Balls)">BB</th><th data-tip="Strikeouts">SO</th><th data-tip="Wild Pitches">WP</th>
+      <th data-tip="Earned Run Average weight 20">ERA</th><th data-tip="Walks and Hits per Inning Pitched">WHIP</th>
+      <th data-tip="Fielding Independent Pitching">FIP</th>
+      <th data-tip="Strike Percentage weight 40">S%</th>
+      <th data-tip="Strikeout to Walk ratio weight 20">K/BB</th>
+      <th data-tip="Wild Pitches per Inning Pitched weight 20">WP/IP</th>
+      <th data-tip="First Pitch Strike Percentage">FPS%</th>
+      <th data-tip="First Pitch Strike resulting in Out pct">FPSO%</th>
+      <th data-tip="At-bats finished in 3 pitches or fewer">LT3%</th>
+      <th data-tip="Leadoff batter Out">LOO</th>
+    </tr></thead>
+    <tbody>
+      <tr><td>Abe Hoffman #21</td><td class="val-good">97.3</td><td>5.0</td><td>2</td><td>3</td><td>12</td><td>1</td><td class="val-good">.000</td><td>.800</td><td class="val-good">.236</td><td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:99%;background:#1a6b3a;"></div></div><span class="val-good">64.6%</span></div></td><td class="val-good">4.00</td><td class="val-good">0.20</td><td>54.6%</td><td class="val-good">91.7%</td><td>27.3%</td><td>4</td></tr>
+      <tr><td>Mateo Castillo #24</td><td class="val-good">80.2</td><td>6.0</td><td>3</td><td>5</td><td>12</td><td>1</td><td>2.000</td><td>1.167</td><td class="val-good">1.580</td><td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:91%;background:#1a6b3a;"></div></div>59.4%</div></td><td class="val-good">2.40</td><td class="val-good">0.17</td><td>51.9%</td><td class="val-good">78.6%</td><td class="val-bad">22.2%</td><td>4</td></tr>
+      <tr><td>JP Anderson #11</td><td class="val-good">77.6</td><td>7.0</td><td>3</td><td>4</td><td>9</td><td>2</td><td>1.714</td><td>1.000</td><td class="val-good">2.094</td><td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:91%;background:#1a6b3a;"></div></div>59.1%</div></td><td class="val-good">2.25</td><td class="val-good">0.29</td><td class="val-bad">41.4%</td><td>58.3%</td><td>48.3%</td><td>5</td></tr>
+      <tr><td>Maddox M.</td><td class="val-good">73.9</td><td>9.2</td><td>4</td><td>5</td><td>8</td><td>0</td><td class="val-good">.000</td><td>1.552</td><td class="val-mid">3.202</td><td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:85%;background:#1a6b3a;"></div></div>55.0%</div></td><td class="val-good">1.60</td><td class="val-good">0.00</td><td class="val-bad">46.8%</td><td>72.7%</td><td>51.1%</td><td>3</td></tr>
+      <tr><td>Jack Briola #23</td><td>60.6</td><td>4.0</td><td>3</td><td>5</td><td>3</td><td>0</td><td>4.500</td><td>2.000</td><td class="val-bad">4.880</td><td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:81%;background:#8a5000;"></div></div>52.4%</div></td><td class="val-mid">0.60</td><td class="val-good">0.00</td><td>55.0%</td><td>63.6%</td><td class="val-good">55.0%</td><td>1</td></tr>
+      <tr><td>Cuinn Crews #17</td><td>59.7</td><td>2.0</td><td>1</td><td>3</td><td>1</td><td>0</td><td class="val-bad">12.00</td><td>3.500</td><td class="val-bad">6.020</td><td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:89%;background:#1a6b3a;"></div></div>57.8%</div></td><td class="val-bad">0.33</td><td class="val-good">0.00</td><td>61.5%</td><td>50.0%</td><td>53.9%</td><td>1</td></tr>
+      <tr><td>David Garton #1</td><td class="val-bad">8.7</td><td>2.0</td><td>2</td><td>7</td><td>1</td><td>3</td><td class="val-bad">12.00</td><td>5.000</td><td class="val-bad">12.02</td><td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:57%;background:#e24b4a;"></div></div><span class="val-bad">37.3%</span></div></td><td class="val-bad">0.14</td><td class="val-bad">1.50</td><td class="val-bad">35.7%</td><td>60.0%</td><td class="val-bad">14.3%</td><td>1</td></tr>
+      <tr><td>Jax Jenkins #75 *</td><td style="color:var(--text-light);">85.9*</td><td>1.0</td><td>1</td><td>1</td><td>2</td><td>0</td><td class="val-good">.000</td><td>1.000</td><td class="val-good">1.580</td><td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:97%;background:#1a6b3a;"></div></div>63.2%</div></td><td class="val-good">2.00</td><td class="val-good">0.00</td><td class="val-good">80.0%</td><td class="val-good">75.0%</td><td>40.0%</td><td>1</td></tr>
+    </tbody>
+  </table>
+  <div class="benchmark-note"><span style="color:var(--green);font-weight:600;">Green</span> = strong &nbsp;|&nbsp; <span style="color:var(--amber);font-weight:600;">Amber</span> = borderline &nbsp;|&nbsp; <span style="color:var(--red);font-weight:600;">Red</span> = below benchmark &nbsp;|&nbsp; * insufficient sample &nbsp;|&nbsp; ERA capped at 20.00 for scoring</div>
+
+  <div class="divider"></div>
+  <div class="section-label">Team summary &mdash; full season</div>
+  <div class="metrics-grid">
+    <div class="metric-card"><div class="metric-label">Total innings pitched</div><div class="metric-value">36.2</div><div class="metric-sub">8 pitchers used</div></div>
+    <div class="metric-card"><div class="metric-label">Team ERA</div><div class="metric-value">2.291</div><div class="metric-sub good">Strong overall</div></div>
+    <div class="metric-card"><div class="metric-label">Team strike%</div><div class="metric-value">56.3%</div><div class="metric-sub good">Above 55% target</div></div>
+    <div class="metric-card"><div class="metric-label">Team FPS%</div><div class="metric-value">49.7%</div><div class="metric-sub warn">just below 50% ideal</div></div>
+  </div>
+  <div class="bottom-line-wolves">
+    <strong>Bottom line &mdash;</strong> <strong>Abe Hoffman</strong> scores 97.3 and leads both rosters by a significant margin. <strong>Mateo Castillo</strong> (80.2), <strong>JP Anderson</strong> (77.6), and <strong>Maddox Montejano</strong> (73.9) all have all four indicators green and form a reliable core. <strong>Jack Briola</strong> (60.6) and <strong>Cuinn Crews</strong> (59.7) need K/BB improvement. <strong>David Garton</strong> scores 8.7 and needs fundamental command development. <strong>Jax Jenkins</strong> scores 85.9 on one inning &mdash; get him more appearances immediately.
+  </div>
+</div>
+</div>
+
+<div id="tab-summary" class="tab-content">
+<div class="page">
+  <div class="report-header-summary">
+    <div><div class="report-title">Combined Pitching Summary &mdash; All Rosters</div><div class="report-sub">13 pitchers &middot; Under Dawgs + Wolves &middot; Weighted scoring: Str%x40 + K/BBx20 + WP/IPx20 + ERAx20 &middot; Click any card to view full profile</div></div>
+    <div class="report-meta"><strong>Prepared for head coach</strong>ERA capped at 20.00 to prevent outliers distorting scale</div>
+  </div>
+  <div class="framework-box">
+    <strong>Scoring methodology</strong>
+    Each pitcher scored out of 100. Strike% carries 40 points &mdash; most direct measure of command at this level. K/BB, WP/IP, and ERA each carry 20 points. ERA weighted lowest due to defense dependency and opponent quality variation. Jax Jenkins and Matt K have insufficient innings to rank &mdash; scores shown for reference only. Click any card to jump to the full player profile.
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px;">
+    <div style="background:var(--green-light);border-radius:6px;padding:8px 12px;font-size:11px;color:var(--green);font-weight:600;text-align:center;">75&ndash;100 &middot; Highly recommend</div>
+    <div style="background:#e8f5ef;border-radius:6px;padding:8px 12px;font-size:11px;color:var(--green);font-weight:600;text-align:center;">55&ndash;74 &middot; Recommend / Watch</div>
+    <div style="background:var(--amber-light);border-radius:6px;padding:8px 12px;font-size:11px;color:var(--amber);font-weight:600;text-align:center;">35&ndash;54 &middot; Caution</div>
+    <div style="background:var(--red-light);border-radius:6px;padding:8px 12px;font-size:11px;color:var(--red);font-weight:600;text-align:center;">Below 35 &middot; Do not recommend</div>
+  </div>
+
+  <div class="section-label">All ranked pitchers &mdash; ordered by weighted score</div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;">
+
+    <div class="sum-card" onclick="goToCard('wolves','card-abe')">
+      <div class="sum-rank">1</div>
+      <div class="sum-header"><div class="sum-name">Abe Hoffman <span class="sum-num">#21</span></div><div class="sum-team wolves-tag">Wolves</div></div>
+      <div class="sum-cmd">
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--green);">64.6%</div><div class="sum-lbl">Strike%</div><div class="sum-wt">wt:40</div></div>
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--green);">4.00</div><div class="sum-lbl">K/BB</div><div class="sum-wt">wt:20</div></div>
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--green);">0.20</div><div class="sum-lbl">WP/IP</div><div class="sum-wt">wt:20</div></div>
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--green);">.000</div><div class="sum-lbl">ERA</div><div class="sum-wt">wt:20</div></div>
+      </div>
+      <div class="sum-stats">
+        <div class="sum-stat-item"><div class="sum-stat-val">5.0</div><div class="sum-stat-lbl">IP</div></div>
+        <div class="sum-stat-item"><div class="sum-stat-val">12</div><div class="sum-stat-lbl">SO</div></div>
+        <div class="sum-stat-item"><div class="sum-stat-val">97.3</div><div class="sum-stat-lbl">Score</div></div>
+      </div>
+      <div class="sum-score-wrap"><div style="font-size:8px;color:var(--text-light);">Score vs 100</div><div class="sum-score-track"><div style="height:100%;width:97.3%;background:#5b21b6;border-radius:3px;"></div></div></div>
+      <div class="sum-rec yes">Highly recommend</div>
+    </div>
+
+    <div class="sum-card" onclick="goToCard('wolves','card-mateo')">
+      <div class="sum-rank">2</div>
+      <div class="sum-header"><div class="sum-name">Mateo Castillo <span class="sum-num">#24</span></div><div class="sum-team wolves-tag">Wolves</div></div>
+      <div class="sum-cmd">
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--green);">59.4%</div><div class="sum-lbl">Strike%</div><div class="sum-wt">wt:40</div></div>
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--green);">2.40</div><div class="sum-lbl">K/BB</div><div class="sum-wt">wt:20</div></div>
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--green);">0.17</div><div class="sum-lbl">WP/IP</div><div class="sum-wt">wt:20</div></div>
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--green);">2.000</div><div class="sum-lbl">ERA</div><div class="sum-wt">wt:20</div></div>
+      </div>
+      <div class="sum-stats">
+        <div class="sum-stat-item"><div class="sum-stat-val">6.0</div><div class="sum-stat-lbl">IP</div></div>
+        <div class="sum-stat-item"><div class="sum-stat-val">12</div><div class="sum-stat-lbl">SO</div></div>
+        <div class="sum-stat-item"><div class="sum-stat-val">80.2</div><div class="sum-stat-lbl">Score</div></div>
+      </div>
+      <div class="sum-score-wrap"><div style="font-size:8px;color:var(--text-light);">Score vs 100</div><div class="sum-score-track"><div style="height:100%;width:80.2%;background:#5b21b6;border-radius:3px;"></div></div></div>
+      <div class="sum-rec yes">Recommend</div>
+    </div>
+
+    <div class="sum-card" onclick="goToCard('wolves','card-jp')">
+      <div class="sum-rank">3</div>
+      <div class="sum-header"><div class="sum-name">JP Anderson <span class="sum-num">#11</span></div><div class="sum-team wolves-tag">Wolves</div></div>
+      <div class="sum-cmd">
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--green);">59.1%</div><div class="sum-lbl">Strike%</div><div class="sum-wt">wt:40</div></div>
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--green);">2.25</div><div class="sum-lbl">K/BB</div><div class="sum-wt">wt:20</div></div>
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--green);">0.29</div><div class="sum-lbl">WP/IP</div><div class="sum-wt">wt:20</div></div>
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--green);">1.714</div><div class="sum-lbl">ERA</div><div class="sum-wt">wt:20</div></div>
+      </div>
+      <div class="sum-stats">
+        <div class="sum-stat-item"><div class="sum-stat-val">7.0</div><div class="sum-stat-lbl">IP</div></div>
+        <div class="sum-stat-item"><div class="sum-stat-val">9</div><div class="sum-stat-lbl">SO</div></div>
+        <div class="sum-stat-item"><div class="sum-stat-val">77.6</div><div class="sum-stat-lbl">Score</div></div>
+      </div>
+      <div class="sum-score-wrap"><div style="font-size:8px;color:var(--text-light);">Score vs 100</div><div class="sum-score-track"><div style="height:100%;width:77.6%;background:#5b21b6;border-radius:3px;"></div></div></div>
+      <div class="sum-rec yes">Recommend</div>
+    </div>
+
+    <div class="sum-card" onclick="goToCard('wolves','card-maddox')">
+      <div class="sum-rank">4</div>
+      <div class="sum-header"><div class="sum-name">Maddox Montejano</div><div class="sum-team wolves-tag">Wolves</div></div>
+      <div class="sum-cmd">
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--green);">55.0%</div><div class="sum-lbl">Strike%</div><div class="sum-wt">wt:40</div></div>
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--green);">1.60</div><div class="sum-lbl">K/BB</div><div class="sum-wt">wt:20</div></div>
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--green);">0.00</div><div class="sum-lbl">WP/IP</div><div class="sum-wt">wt:20</div></div>
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--green);">.000</div><div class="sum-lbl">ERA</div><div class="sum-wt">wt:20</div></div>
+      </div>
+      <div class="sum-stats">
+        <div class="sum-stat-item"><div class="sum-stat-val">9.2</div><div class="sum-stat-lbl">IP</div></div>
+        <div class="sum-stat-item"><div class="sum-stat-val">8</div><div class="sum-stat-lbl">SO</div></div>
+        <div class="sum-stat-item"><div class="sum-stat-val">73.9</div><div class="sum-stat-lbl">Score</div></div>
+      </div>
+      <div class="sum-score-wrap"><div style="font-size:8px;color:var(--text-light);">Score vs 100</div><div class="sum-score-track"><div style="height:100%;width:73.9%;background:#5b21b6;border-radius:3px;"></div></div></div>
+      <div class="sum-rec yes">Recommend</div>
+    </div>
+
+    <div class="sum-card" onclick="goToCard('wolves','card-jack')">
+      <div class="sum-rank">5</div>
+      <div class="sum-header"><div class="sum-name">Jack Briola <span class="sum-num">#23</span></div><div class="sum-team wolves-tag">Wolves</div></div>
+      <div class="sum-cmd">
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--amber);">52.4%</div><div class="sum-lbl">Strike%</div><div class="sum-wt">wt:40</div></div>
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--amber);">0.60</div><div class="sum-lbl">K/BB</div><div class="sum-wt">wt:20</div></div>
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--green);">0.00</div><div class="sum-lbl">WP/IP</div><div class="sum-wt">wt:20</div></div>
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--green);">4.500</div><div class="sum-lbl">ERA</div><div class="sum-wt">wt:20</div></div>
+      </div>
+      <div class="sum-stats">
+        <div class="sum-stat-item"><div class="sum-stat-val">4.0</div><div class="sum-stat-lbl">IP</div></div>
+        <div class="sum-stat-item"><div class="sum-stat-val">3</div><div class="sum-stat-lbl">SO</div></div>
+        <div class="sum-stat-item"><div class="sum-stat-val">60.6</div><div class="sum-stat-lbl">Score</div></div>
+      </div>
+      <div class="sum-score-wrap"><div style="font-size:8px;color:var(--text-light);">Score vs 100</div><div class="sum-score-track"><div style="height:100%;width:60.6%;background:#5b21b6;border-radius:3px;"></div></div></div>
+      <div class="sum-rec watch">Watch &mdash; improve K/BB</div>
+    </div>
+
+    <div class="sum-card" onclick="goToCard('wolves','card-cuinn')">
+      <div class="sum-rank">6</div>
+      <div class="sum-header"><div class="sum-name">Cuinn Crews <span class="sum-num">#17</span></div><div class="sum-team wolves-tag">Wolves</div></div>
+      <div class="sum-cmd">
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--green);">57.8%</div><div class="sum-lbl">Strike%</div><div class="sum-wt">wt:40</div></div>
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--red);">0.33</div><div class="sum-lbl">K/BB</div><div class="sum-wt">wt:20</div></div>
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--green);">0.00</div><div class="sum-lbl">WP/IP</div><div class="sum-wt">wt:20</div></div>
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--red);">12.00</div><div class="sum-lbl">ERA</div><div class="sum-wt">wt:20</div></div>
+      </div>
+      <div class="sum-stats">
+        <div class="sum-stat-item"><div class="sum-stat-val">2.0</div><div class="sum-stat-lbl">IP</div></div>
+        <div class="sum-stat-item"><div class="sum-stat-val">1</div><div class="sum-stat-lbl">SO</div></div>
+        <div class="sum-stat-item"><div class="sum-stat-val">59.7</div><div class="sum-stat-lbl">Score</div></div>
+      </div>
+      <div class="sum-score-wrap"><div style="font-size:8px;color:var(--text-light);">Score vs 100</div><div class="sum-score-track"><div style="height:100%;width:59.7%;background:#5b21b6;border-radius:3px;"></div></div></div>
+      <div class="sum-rec no">Do not recommend</div>
+    </div>
+
+    <div class="sum-card" onclick="goToCard('dawgs','card-roman')">
+      <div class="sum-rank">7</div>
+      <div class="sum-header"><div class="sum-name">Roman G <span class="sum-num">#18</span></div><div class="sum-team dawgs-tag">Under Dawgs</div></div>
+      <div class="sum-cmd">
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--green);">56%</div><div class="sum-lbl">Strike%</div><div class="sum-wt">wt:40</div></div>
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--green);">1.00</div><div class="sum-lbl">K/BB</div><div class="sum-wt">wt:20</div></div>
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--amber);">0.38</div><div class="sum-lbl">WP/IP</div><div class="sum-wt">wt:20</div></div>
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--red);">10.13</div><div class="sum-lbl">ERA</div><div class="sum-wt">wt:20</div></div>
+      </div>
+      <div class="sum-stats">
+        <div class="sum-stat-item"><div class="sum-stat-val">2.2</div><div class="sum-stat-lbl">IP</div></div>
+        <div class="sum-stat-item"><div class="sum-stat-val">2</div><div class="sum-stat-lbl">SO</div></div>
+        <div class="sum-stat-item"><div class="sum-stat-val">57.2</div><div class="sum-stat-lbl">Score</div></div>
+      </div>
+      <div class="sum-score-wrap"><div style="font-size:8px;color:var(--text-light);">Score vs 100</div><div class="sum-score-track"><div style="height:100%;width:57.2%;background:#2253a8;border-radius:3px;"></div></div></div>
+      <div class="sum-rec watch">Watch &mdash; ERA reflects contact</div>
+    </div>
+
+    <div class="sum-card" onclick="goToCard('dawgs','card-liam')">
+      <div class="sum-rank">8</div>
+      <div class="sum-header"><div class="sum-name">Liam S <span class="sum-num">#33</span></div><div class="sum-team dawgs-tag">Under Dawgs</div></div>
+      <div class="sum-cmd">
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--amber);">53%</div><div class="sum-lbl">Strike%</div><div class="sum-wt">wt:40</div></div>
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--amber);">0.67</div><div class="sum-lbl">K/BB</div><div class="sum-wt">wt:20</div></div>
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--green);">0.00</div><div class="sum-lbl">WP/IP</div><div class="sum-wt">wt:20</div></div>
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--red);">18.00</div><div class="sum-lbl">ERA</div><div class="sum-wt">wt:20</div></div>
+      </div>
+      <div class="sum-stats">
+        <div class="sum-stat-item"><div class="sum-stat-val">4.0</div><div class="sum-stat-lbl">IP</div></div>
+        <div class="sum-stat-item"><div class="sum-stat-val">2</div><div class="sum-stat-lbl">SO</div></div>
+        <div class="sum-stat-item"><div class="sum-stat-val">48.4</div><div class="sum-stat-lbl">Score</div></div>
+      </div>
+      <div class="sum-score-wrap"><div style="font-size:8px;color:var(--text-light);">Score vs 100</div><div class="sum-score-track"><div style="height:100%;width:48.4%;background:#2253a8;border-radius:3px;"></div></div></div>
+      <div class="sum-rec watch">Watch &mdash; ERA reflects tough schedule</div>
+    </div>
+
+    <div class="sum-card" onclick="goToCard('dawgs','card-tripp')">
+      <div class="sum-rank">9</div>
+      <div class="sum-header"><div class="sum-name">Tripp A <span class="sum-num">#3</span></div><div class="sum-team dawgs-tag">Under Dawgs</div></div>
+      <div class="sum-cmd">
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--amber);">53%</div><div class="sum-lbl">Strike%</div><div class="sum-wt">wt:40</div></div>
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--amber);">0.63</div><div class="sum-lbl">K/BB</div><div class="sum-wt">wt:20</div></div>
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--red);">1.36</div><div class="sum-lbl">WP/IP</div><div class="sum-wt">wt:20</div></div>
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--green);">4.91</div><div class="sum-lbl">ERA</div><div class="sum-wt">wt:20</div></div>
+      </div>
+      <div class="sum-stats">
+        <div class="sum-stat-item"><div class="sum-stat-val">3.2</div><div class="sum-stat-lbl">IP</div></div>
+        <div class="sum-stat-item"><div class="sum-stat-val">5</div><div class="sum-stat-lbl">SO</div></div>
+        <div class="sum-stat-item"><div class="sum-stat-val">43.1</div><div class="sum-stat-lbl">Score</div></div>
+      </div>
+      <div class="sum-score-wrap"><div style="font-size:8px;color:var(--text-light);">Score vs 100</div><div class="sum-score-track"><div style="height:100%;width:43.1%;background:#2253a8;border-radius:3px;"></div></div></div>
+      <div class="sum-rec no">Do not recommend</div>
+    </div>
+
+    <div class="sum-card" onclick="goToCard('dawgs','card-caiden')">
+      <div class="sum-rank">10</div>
+      <div class="sum-header"><div class="sum-name">Caiden R <span class="sum-num">#21</span></div><div class="sum-team dawgs-tag">Under Dawgs</div></div>
+      <div class="sum-cmd">
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--amber);">53%</div><div class="sum-lbl">Strike%</div><div class="sum-wt">wt:40</div></div>
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--amber);">0.63</div><div class="sum-lbl">K/BB</div><div class="sum-wt">wt:20</div></div>
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--red);">1.09</div><div class="sum-lbl">WP/IP</div><div class="sum-wt">wt:20</div></div>
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--red);">14.73</div><div class="sum-lbl">ERA</div><div class="sum-wt">wt:20</div></div>
+      </div>
+      <div class="sum-stats">
+        <div class="sum-stat-item"><div class="sum-stat-val">3.2</div><div class="sum-stat-lbl">IP</div></div>
+        <div class="sum-stat-item"><div class="sum-stat-val">5</div><div class="sum-stat-lbl">SO</div></div>
+        <div class="sum-stat-item"><div class="sum-stat-val">36.9</div><div class="sum-stat-lbl">Score</div></div>
+      </div>
+      <div class="sum-score-wrap"><div style="font-size:8px;color:var(--text-light);">Score vs 100</div><div class="sum-score-track"><div style="height:100%;width:36.9%;background:#2253a8;border-radius:3px;"></div></div></div>
+      <div class="sum-rec no">Do not recommend</div>
+    </div>
+
+    <div class="sum-card" onclick="goToCard('wolves','card-david')">
+      <div class="sum-rank">11</div>
+      <div class="sum-header"><div class="sum-name">David Garton <span class="sum-num">#1</span></div><div class="sum-team wolves-tag">Wolves</div></div>
+      <div class="sum-cmd">
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--red);">37.3%</div><div class="sum-lbl">Strike%</div><div class="sum-wt">wt:40</div></div>
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--red);">0.14</div><div class="sum-lbl">K/BB</div><div class="sum-wt">wt:20</div></div>
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--red);">1.50</div><div class="sum-lbl">WP/IP</div><div class="sum-wt">wt:20</div></div>
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--red);">12.00</div><div class="sum-lbl">ERA</div><div class="sum-wt">wt:20</div></div>
+      </div>
+      <div class="sum-stats">
+        <div class="sum-stat-item"><div class="sum-stat-val">2.0</div><div class="sum-stat-lbl">IP</div></div>
+        <div class="sum-stat-item"><div class="sum-stat-val">1</div><div class="sum-stat-lbl">SO</div></div>
+        <div class="sum-stat-item"><div class="sum-stat-val">8.7</div><div class="sum-stat-lbl">Score</div></div>
+      </div>
+      <div class="sum-score-wrap"><div style="font-size:8px;color:var(--text-light);">Score vs 100</div><div class="sum-score-track"><div style="height:100%;width:8.7%;background:#e24b4a;border-radius:3px;"></div></div></div>
+      <div class="sum-rec no">Do not recommend</div>
+    </div>
+
+  </div>
+
+  <div class="section-label">Insufficient sample &mdash; scores shown for reference only</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px;opacity:0.85;">
+    <div class="sum-card" onclick="goToCard('wolves','card-jax')">
+      <div class="sum-rank" style="background:var(--gray-light);color:var(--gray);">?</div>
+      <div class="sum-header"><div class="sum-name">Jax Jenkins <span class="sum-num">#75</span></div><div class="sum-team wolves-tag">Wolves &middot; 1.0 IP only</div></div>
+      <div class="sum-cmd">
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--green);">63.2%</div><div class="sum-lbl">Strike%</div><div class="sum-wt">wt:40</div></div>
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--green);">2.00</div><div class="sum-lbl">K/BB</div><div class="sum-wt">wt:20</div></div>
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--green);">0.00</div><div class="sum-lbl">WP/IP</div><div class="sum-wt">wt:20</div></div>
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--green);">.000</div><div class="sum-lbl">ERA</div><div class="sum-wt">wt:20</div></div>
+      </div>
+      <div class="sum-stats">
+        <div class="sum-stat-item"><div class="sum-stat-val">1.0</div><div class="sum-stat-lbl">IP</div></div>
+        <div class="sum-stat-item"><div class="sum-stat-val">2</div><div class="sum-stat-lbl">SO</div></div>
+        <div class="sum-stat-item"><div class="sum-stat-val">85.9*</div><div class="sum-stat-lbl">Score</div></div>
+      </div>
+      <div class="sum-rec insuf">No decision &mdash; 85.9 on 1.0 IP. Get him more appearances immediately.</div>
+    </div>
+    <div class="sum-card" onclick="goToCard('dawgs','card-mattk')">
+      <div class="sum-rank" style="background:var(--gray-light);color:var(--gray);">?</div>
+      <div class="sum-header"><div class="sum-name">Matt K <span class="sum-num">#13</span></div><div class="sum-team dawgs-tag">Under Dawgs &middot; 0.2 IP only</div></div>
+      <div class="sum-cmd">
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--red);">42%</div><div class="sum-lbl">Strike%</div><div class="sum-wt">wt:40</div></div>
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--red);">0.00</div><div class="sum-lbl">K/BB</div><div class="sum-wt">wt:20</div></div>
+        <div class="sum-cmd-item"><div class="sum-val">0.00</div><div class="sum-lbl">WP/IP</div><div class="sum-wt">wt:20</div></div>
+        <div class="sum-cmd-item"><div class="sum-val" style="color:var(--red);">54.00</div><div class="sum-lbl">ERA (capped)</div><div class="sum-wt">wt:20</div></div>
+      </div>
+      <div class="sum-stats">
+        <div class="sum-stat-item"><div class="sum-stat-val">0.2</div><div class="sum-stat-lbl">IP</div></div>
+        <div class="sum-stat-item"><div class="sum-stat-val">0</div><div class="sum-stat-lbl">SO</div></div>
+        <div class="sum-stat-item"><div class="sum-stat-val">26.9*</div><div class="sum-stat-lbl">Score</div></div>
+      </div>
+      <div class="sum-rec insuf">No decision &mdash; 0.2 IP is not a meaningful sample. Need 2-3 more outings.</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="section-label">Combined statistical table &mdash; click any column header to sort</div>
+  <div style="overflow-x:auto;">
+  <table id="combined-table" class="data-table" style="font-size:11px;">
+    <thead><tr>
+      <th class="sortable" data-col="0" data-type="str" data-tip="Pitcher name" style="text-align:left;white-space:nowrap;">Pitcher <span class="sort-icon">&#8597;</span></th>
+      <th class="sortable" data-col="1" data-type="str" data-tip="Team roster">Team <span class="sort-icon">&#8597;</span></th>
+      <th class="sortable" data-col="2" data-type="num" data-tip="Weighted score: Strike% x40 + K/BB x20 + WP/IP x20 + ERA x20">Score <span class="sort-icon">&#8597;</span></th>
+      <th class="sortable" data-col="3" data-type="num" data-tip="Innings Pitched">IP <span class="sort-icon">&#8597;</span></th>
+      <th class="sortable" data-col="4" data-type="num" data-tip="Walks (Base on Balls)">BB <span class="sort-icon">&#8597;</span></th>
+      <th class="sortable" data-col="5" data-type="num" data-tip="Strikeouts">SO <span class="sort-icon">&#8597;</span></th>
+      <th class="sortable" data-col="6" data-type="num" data-tip="Wild Pitches">WP <span class="sort-icon">&#8597;</span></th>
+      <th class="sortable" data-col="7" data-type="num" data-tip="Earned Run Average weight 20">ERA <span class="sort-icon">&#8597;</span></th>
+      <th class="sortable" data-col="8" data-type="num" data-tip="Walks and Hits per Inning Pitched">WHIP <span class="sort-icon">&#8597;</span></th>
+      <th class="sortable" data-col="9" data-type="num" data-tip="Strike Percentage weight 40">S% <span class="sort-icon">&#8597;</span></th>
+      <th class="sortable" data-col="10" data-type="num" data-tip="Strikeout to Walk ratio weight 20">K/BB <span class="sort-icon">&#8597;</span></th>
+      <th class="sortable" data-col="11" data-type="num" data-tip="Wild Pitches per Inning Pitched weight 20">WP/IP <span class="sort-icon">&#8597;</span></th>
+      <th class="sortable" data-col="12" data-type="str" data-tip="Scout recommendation">Verdict <span class="sort-icon">&#8597;</span></th>
+    </tr></thead>
+    <tbody id="combined-tbody">
+      <tr data-vals="Abe Hoffman|Wolves|97.3|5.0|3|12|1|0.000|0.800|64.6|4.00|0.20|Highly recommend">
+        <td style="white-space:nowrap;">Abe Hoffman #21</td><td><span style="color:var(--wolves-purple);font-weight:500;font-size:10px;">Wolves</span></td>
+        <td class="val-good">97.3</td><td>5.0</td><td>3</td><td>12</td><td>1</td><td class="val-good">.000</td><td>.800</td>
+        <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:99%;background:#1a6b3a;"></div></div><span class="val-good">64.6%</span></div></td>
+        <td class="val-good">4.00</td><td class="val-good">0.20</td>
+        <td><span class="sum-rec yes" style="display:inline-block;white-space:nowrap;font-size:9px;">Highly recommend</span></td>
+      </tr>
+      <tr data-vals="Mateo Castillo|Wolves|80.2|6.0|5|12|1|2.000|1.167|59.4|2.40|0.17|Recommend">
+        <td style="white-space:nowrap;">Mateo Castillo #24</td><td><span style="color:var(--wolves-purple);font-weight:500;font-size:10px;">Wolves</span></td>
+        <td class="val-good">80.2</td><td>6.0</td><td>5</td><td>12</td><td>1</td><td>2.000</td><td>1.167</td>
+        <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:91%;background:#1a6b3a;"></div></div>59.4%</div></td>
+        <td class="val-good">2.40</td><td class="val-good">0.17</td>
+        <td><span class="sum-rec yes" style="display:inline-block;white-space:nowrap;font-size:9px;">Recommend</span></td>
+      </tr>
+      <tr data-vals="JP Anderson|Wolves|77.6|7.0|4|9|2|1.714|1.000|59.1|2.25|0.29|Recommend">
+        <td style="white-space:nowrap;">JP Anderson #11</td><td><span style="color:var(--wolves-purple);font-weight:500;font-size:10px;">Wolves</span></td>
+        <td class="val-good">77.6</td><td>7.0</td><td>4</td><td>9</td><td>2</td><td>1.714</td><td>1.000</td>
+        <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:91%;background:#1a6b3a;"></div></div>59.1%</div></td>
+        <td class="val-good">2.25</td><td class="val-good">0.29</td>
+        <td><span class="sum-rec yes" style="display:inline-block;white-space:nowrap;font-size:9px;">Recommend</span></td>
+      </tr>
+      <tr data-vals="Maddox Montejano|Wolves|73.9|9.2|5|8|0|0.000|1.552|55.0|1.60|0.00|Recommend">
+        <td style="white-space:nowrap;">Maddox Montejano</td><td><span style="color:var(--wolves-purple);font-weight:500;font-size:10px;">Wolves</span></td>
+        <td class="val-good">73.9</td><td>9.2</td><td>5</td><td>8</td><td>0</td><td class="val-good">.000</td><td>1.552</td>
+        <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:85%;background:#1a6b3a;"></div></div>55.0%</div></td>
+        <td class="val-good">1.60</td><td class="val-good">0.00</td>
+        <td><span class="sum-rec yes" style="display:inline-block;white-space:nowrap;font-size:9px;">Recommend</span></td>
+      </tr>
+      <tr data-vals="Jack Briola|Wolves|60.6|4.0|5|3|0|4.500|2.000|52.4|0.60|0.00|Watch">
+        <td style="white-space:nowrap;">Jack Briola #23</td><td><span style="color:var(--wolves-purple);font-weight:500;font-size:10px;">Wolves</span></td>
+        <td>60.6</td><td>4.0</td><td>5</td><td>3</td><td>0</td><td>4.500</td><td>2.000</td>
+        <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:81%;background:#8a5000;"></div></div>52.4%</div></td>
+        <td class="val-mid">0.60</td><td class="val-good">0.00</td>
+        <td><span class="sum-rec watch" style="display:inline-block;white-space:nowrap;font-size:9px;">Watch</span></td>
+      </tr>
+      <tr data-vals="Cuinn Crews|Wolves|59.7|2.0|3|1|0|12.000|3.500|57.8|0.33|0.00|Do not recommend">
+        <td style="white-space:nowrap;">Cuinn Crews #17</td><td><span style="color:var(--wolves-purple);font-weight:500;font-size:10px;">Wolves</span></td>
+        <td>59.7</td><td>2.0</td><td>3</td><td>1</td><td>0</td><td class="val-bad">12.000</td><td>3.500</td>
+        <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:89%;background:#1a6b3a;"></div></div>57.8%</div></td>
+        <td class="val-bad">0.33</td><td class="val-good">0.00</td>
+        <td><span class="sum-rec no" style="display:inline-block;white-space:nowrap;font-size:9px;">Do not recommend</span></td>
+      </tr>
+      <tr data-vals="Roman G|Under Dawgs|57.2|2.2|2|2|1|10.130|3.000|56.0|1.00|0.38|Watch">
+        <td style="white-space:nowrap;">Roman G #18</td><td><span style="color:var(--blue);font-weight:500;font-size:10px;">Under Dawgs</span></td>
+        <td>57.2</td><td>2.2</td><td>2</td><td>2</td><td>1</td><td class="val-bad">10.13</td><td class="val-bad">3.000</td>
+        <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:86%;background:#1a6b3a;"></div></div>56%</div></td>
+        <td>1.00</td><td class="val-mid">0.38</td>
+        <td><span class="sum-rec watch" style="display:inline-block;white-space:nowrap;font-size:9px;">Watch</span></td>
+      </tr>
+      <tr data-vals="Liam S|Under Dawgs|48.4|4.0|3|2|0|18.000|2.500|53.0|0.67|0.00|Watch">
+        <td style="white-space:nowrap;">Liam S #33</td><td><span style="color:var(--blue);font-weight:500;font-size:10px;">Under Dawgs</span></td>
+        <td>48.4</td><td>4.0</td><td>3</td><td>2</td><td>0</td><td class="val-bad">18.000</td><td class="val-bad">2.500</td>
+        <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:82%;background:#8a5000;"></div></div>53%</div></td>
+        <td class="val-mid">0.67</td><td class="val-good">0.00</td>
+        <td><span class="sum-rec watch" style="display:inline-block;white-space:nowrap;font-size:9px;">Watch</span></td>
+      </tr>
+      <tr data-vals="Tripp A|Under Dawgs|43.1|3.2|8|5|5|4.910|2.727|53.0|0.63|1.36|Do not recommend">
+        <td style="white-space:nowrap;">Tripp A #3</td><td><span style="color:var(--blue);font-weight:500;font-size:10px;">Under Dawgs</span></td>
+        <td>43.1</td><td>3.2</td><td>8</td><td>5</td><td>5</td><td>4.91</td><td class="val-bad">2.727</td>
+        <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:82%;background:#8a5000;"></div></div>53%</div></td>
+        <td class="val-mid">0.63</td><td class="val-bad">1.36</td>
+        <td><span class="sum-rec no" style="display:inline-block;white-space:nowrap;font-size:9px;">Do not recommend</span></td>
+      </tr>
+      <tr data-vals="Caiden R|Under Dawgs|36.9|3.2|8|5|4|14.730|3.273|53.0|0.63|1.09|Do not recommend">
+        <td style="white-space:nowrap;">Caiden R #21</td><td><span style="color:var(--blue);font-weight:500;font-size:10px;">Under Dawgs</span></td>
+        <td>36.9</td><td>3.2</td><td>8</td><td>5</td><td>4</td><td class="val-bad">14.73</td><td class="val-bad">3.273</td>
+        <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:82%;background:#8a5000;"></div></div>53%</div></td>
+        <td class="val-mid">0.63</td><td class="val-bad">1.09</td>
+        <td><span class="sum-rec no" style="display:inline-block;white-space:nowrap;font-size:9px;">Do not recommend</span></td>
+      </tr>
+      <tr data-vals="David Garton|Wolves|8.7|2.0|7|1|3|12.000|5.000|37.3|0.14|1.50|Do not recommend">
+        <td style="white-space:nowrap;">David Garton #1</td><td><span style="color:var(--wolves-purple);font-weight:500;font-size:10px;">Wolves</span></td>
+        <td class="val-bad">8.7</td><td>2.0</td><td>7</td><td>1</td><td>3</td><td class="val-bad">12.000</td><td>5.000</td>
+        <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:57%;background:#e24b4a;"></div></div><span class="val-bad">37.3%</span></div></td>
+        <td class="val-bad">0.14</td><td class="val-bad">1.50</td>
+        <td><span class="sum-rec no" style="display:inline-block;white-space:nowrap;font-size:9px;">Do not recommend</span></td>
+      </tr>
+      <tr data-vals="Jax Jenkins|Wolves|85.9|1.0|1|2|0|0.000|1.000|63.2|2.00|0.00|No decision" style="opacity:0.7;">
+        <td style="white-space:nowrap;">Jax Jenkins #75 *</td><td><span style="color:var(--wolves-purple);font-weight:500;font-size:10px;">Wolves</span></td>
+        <td style="color:var(--text-light);">85.9*</td><td>1.0</td><td>1</td><td>2</td><td>0</td><td class="val-good">.000</td><td>1.000</td>
+        <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:97%;background:#1a6b3a;"></div></div>63.2%</div></td>
+        <td class="val-good">2.00</td><td class="val-good">0.00</td>
+        <td><span class="sum-rec insuf" style="display:inline-block;white-space:nowrap;font-size:9px;">No decision</span></td>
+      </tr>
+      <tr data-vals="Matt K|Under Dawgs|26.9|0.2|2|0|0|54.000|7.500|42.0|0.00|0.00|No decision" style="opacity:0.7;">
+        <td style="white-space:nowrap;">Matt K #13 *</td><td><span style="color:var(--blue);font-weight:500;font-size:10px;">Under Dawgs</span></td>
+        <td style="color:var(--text-light);">26.9*</td><td>0.2</td><td>2</td><td>0</td><td>0</td><td class="val-bad">54.000</td><td class="val-bad">7.500</td>
+        <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:65%;background:#e24b4a;"></div></div>42%</div></td>
+        <td class="val-bad">0.00</td><td>0.00</td>
+        <td><span class="sum-rec insuf" style="display:inline-block;white-space:nowrap;font-size:9px;">No decision</span></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="benchmark-note" style="margin-top:6px;">
+    <span style="color:var(--green);font-weight:600;">Green</span> = strong &nbsp;|&nbsp;
+    <span style="color:var(--amber);font-weight:600;">Amber</span> = borderline &nbsp;|&nbsp;
+    <span style="color:var(--red);font-weight:600;">Red</span> = below benchmark &nbsp;|&nbsp;
+    * insufficient sample &nbsp;|&nbsp; ERA capped at 20.00 for scoring &nbsp;|&nbsp; Hover headers for full names &nbsp;|&nbsp; Click to sort
+  </div>
+
+  <div class="divider"></div>
+  <div class="bottom-line-summary">
+    <strong>Scout summary &mdash;</strong>
+    <strong>Highly recommend:</strong> Abe Hoffman 97.3 &mdash; leads both rosters by a wide margin, all four indicators green.
+    <strong>Recommend:</strong> Mateo Castillo 80.2, JP Anderson 77.6, Maddox Montejano 73.9 &mdash; all four indicators green, reliable Wolves core.
+    <strong>Watch:</strong> Jack Briola 60.6 (K/BB needs work); Roman G 57.2 (best Under Dawgs arm); Liam S 48.4 (ERA penalized by tough schedule, zero WP is real).
+    <strong>Do not recommend:</strong> Cuinn Crews 59.7 (poor K/BB and ERA despite good Strike%); Tripp A 43.1 (WP/IP is the killer); Caiden R 36.9 (three of four indicators poor); David Garton 8.7 (all four indicators red, worst score across both rosters).
+    <strong>No decision:</strong> Jax Jenkins 85.9 on 1.0 IP &mdash; get him more appearances immediately. Matt K needs more outings before any evaluation.
+  </div>
+</div>
+</div>
+
+<script>
+var tabMap={'dawgs':0,'wolves':1,'summary':2};
+var classMap={'dawgs':'active-dawgs','wolves':'active-wolves','summary':'active-summary'};
+function showTab(tab,btn){
+  document.querySelectorAll('.tab-content').forEach(function(el){el.classList.remove('active');});
+  document.querySelectorAll('.tab-btn').forEach(function(el){el.className='tab-btn';});
+  document.getElementById('tab-'+tab).classList.add('active');
+  btn.classList.add(classMap[tab]);
+}
+function goToCard(team,cardId){
+  var buttons=document.querySelectorAll('.tab-btn');
+  var btn=buttons[tabMap[team]];
+  showTab(team,btn);
+  setTimeout(function(){
+    var el=document.getElementById(cardId);
+    if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.style.outline='3px solid #f59e0b';setTimeout(function(){el.style.outline='';},1800);}
+  },80);
+}
+(function(){
+  var verdictOrder={'Highly recommend':0,'Recommend':1,'Watch':2,'Do not recommend':3,'No decision':4};
+  var lastCol=-1,lastAsc=true;
+  function getNum(s){var n=parseFloat(s);return isNaN(n)?9999:n;}
+  function sortTable(col,type){
+    var asc=(lastCol===col)?!lastAsc:true;
+    lastCol=col;lastAsc=asc;
+    var tbody=document.getElementById('combined-tbody');
+    var rows=Array.from(tbody.querySelectorAll('tr'));
+    rows.sort(function(a,b){
+      var av=a.getAttribute('data-vals').split('|')[col];
+      var bv=b.getAttribute('data-vals').split('|')[col];
+      var r;
+      if(col===12){r=(verdictOrder[av]||99)-(verdictOrder[bv]||99);}
+      else if(type==='num'){r=getNum(av)-getNum(bv);}
+      else{r=av.localeCompare(bv);}
+      return asc?r:-r;
+    });
+    rows.forEach(function(r){tbody.appendChild(r);});
+    document.querySelectorAll('#combined-table .sortable').forEach(function(th){
+      th.classList.remove('sort-asc','sort-desc');
+      th.querySelector('.sort-icon').innerHTML='&#8597;';
+    });
+    var th=document.querySelectorAll('#combined-table .sortable')[col];
+    th.classList.add(asc?'sort-asc':'sort-desc');
+    th.querySelector('.sort-icon').innerHTML=asc?'&#8593;':'&#8595;';
+  }
+  document.querySelectorAll('#combined-table .sortable').forEach(function(th){
+    th.addEventListener('click',function(){
+      sortTable(parseInt(this.getAttribute('data-col')),this.getAttribute('data-type'));
+    });
+  });
+})();
+</script>
+</body>
+</html>
