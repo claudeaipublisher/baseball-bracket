@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WPBR Majors Division – Spring 2026</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0d1f30;color:#e0ecf7;font-family:'Segoe UI',Arial,sans-serif;min-height:100vh;font-size:14px}
+
+/* HEADER */
+header{background:linear-gradient(135deg,#081627 0%,#0a2236 60%,#0d2e45 100%);border-bottom:3px solid #00b4d8;padding:16px 24px;display:flex;align-items:center;gap:14px}
+.hdr-icon{font-size:2.2rem;line-height:1}
+.hdr-title{font-size:1.3rem;font-weight:700;letter-spacing:.3px}
+.hdr-sub{font-size:.78rem;color:#6a90b0;margin-top:3px}
+.hdr-badges{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.badge{background:#00b4d8;color:#fff;font-size:.7rem;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap}
+.badge.gold{background:#d4930a}
+
+/* SECTION TABS (Hitting / Pitching / Fielding) */
+.section-tabs{display:flex;background:#091a28;border-bottom:2px solid #1a3348}
+.section-tab{padding:13px 28px;font-size:.88rem;font-weight:600;cursor:pointer;color:#5a80a0;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .15s;white-space:nowrap;letter-spacing:.3px}
+.section-tab:hover{color:#c0d8f0}
+.section-tab.active{color:#fff;border-bottom-color:#00b4d8;background:#0d2036}
+
+/* TEAM FILTER BAR */
+.team-bar{background:#0d2036;border-bottom:1px solid #1a3348;padding:0 24px;display:flex;gap:0;overflow-x:auto}
+.team-btn{padding:9px 16px;font-size:.76rem;color:#5a80a0;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s}
+.team-btn:hover{color:#c0d8f0}
+.team-btn.active{color:#00b4d8;border-bottom-color:#00b4d8;font-weight:700}
+
+/* CONTROLS */
+.controls{background:#0a1e30;border-bottom:1px solid #1a3348;padding:12px 24px;display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end}
+.ctrl{display:flex;flex-direction:column;gap:4px}
+.ctrl label{font-size:.67rem;color:#5a80a0;font-weight:700;text-transform:uppercase;letter-spacing:.6px}
+select,input[type=text]{background:#091522;border:1px solid #1e3a52;color:#c8dff0;border-radius:6px;padding:6px 10px;font-size:.82rem;outline:none;min-width:160px}
+select:focus,input:focus{border-color:#00b4d8}
+.dir-wrap{display:flex;gap:6px}
+.dir-btn{background:#091522;border:1px solid #1e3a52;color:#8aaccc;border-radius:6px;padding:6px 16px;font-size:.82rem;cursor:pointer;transition:all .15s;white-space:nowrap}
+.dir-btn.active{background:#00b4d8;border-color:#00b4d8;color:#fff;font-weight:700}
+.dir-btn:hover:not(.active){border-color:#00b4d8;color:#00b4d8}
+.topn-wrap{display:flex;gap:5px;flex-wrap:wrap}
+.topn-btn{background:#091522;border:1px solid #1e3a52;color:#8aaccc;border-radius:6px;padding:5px 13px;font-size:.76rem;cursor:pointer;transition:all .15s;white-space:nowrap}
+.topn-btn.active{background:#d4930a;border-color:#d4930a;color:#fff;font-weight:700}
+.topn-btn:hover:not(.active){border-color:#d4930a;color:#d4930a}
+.info-pill{background:#091522;border:1px solid #1e3a52;border-radius:6px;padding:6px 14px;font-size:.78rem;color:#5a80a0;white-space:nowrap;align-self:center}
+.info-pill span{color:#f4a827;font-weight:700}
+
+/* TABLE WRAPPER */
+.table-wrap{overflow-x:auto;padding-bottom:60px}
+table{width:100%;border-collapse:collapse;font-size:.82rem}
+thead{position:sticky;top:0;z-index:10}
+th{background:#0a1e2e;padding:9px 12px;text-align:left;font-size:.7rem;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#4a7090;border-bottom:2px solid #1a3348;cursor:pointer;user-select:none;white-space:nowrap;transition:color .15s}
+th:hover{color:#c0d8f0}
+th.sorted{color:#00b4d8}
+.sort-arr{margin-left:3px;font-size:.65rem;color:#00b4d8}
+td{padding:8px 12px;border-bottom:1px solid rgba(26,51,72,.6);white-space:nowrap;vertical-align:middle}
+tr:nth-child(odd) td{background:#0c1d2c}
+tr:nth-child(even) td{background:#091828}
+tr:hover td{background:#122a3e}
+
+/* CELL TYPES */
+td.rank{color:#4a7090;font-size:.7rem;font-weight:700;text-align:center;width:36px}
+td.medal{text-align:center;font-size:1rem;width:36px}
+.player-name{font-weight:700;color:#e0ecf7}
+.player-last{color:#7aaccf;font-weight:400}
+td.team{font-size:.74rem;color:#6a8fab}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
+td.hi{color:#f4a827;font-weight:700}   /* highlight - gold for top stat */
+td.good{color:#2dc87a}
+td.ok{color:#c8dff0}
+td.bad{color:#e05060}
+td.nil{color:#2a4560}
+
+/* BAR SPARKLINE */
+.bar-wrap{display:flex;align-items:center;gap:7px}
+.bar-val{min-width:38px;text-align:right;font-variant-numeric:tabular-nums}
+.bar-track{flex:1;height:5px;background:#091522;border-radius:3px;min-width:40px;overflow:hidden}
+.bar-fill{height:100%;border-radius:3px;background:#00b4d8}
+.bar-fill.gold{background:#d4930a}
+.bar-fill.red{background:#e05060}
+
+/* TEAM DOT */
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:middle;flex-shrink:0}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:70px 20px;color:#3a6080;font-size:.95rem}
+
+/* NOTE BAR */
+.note-bar{background:#081627;border-bottom:1px solid #1a3348;padding:7px 24px;font-size:.74rem;color:#4a7090}
+.note-bar b{color:#7aaccf}
+
+/* PITCHING LEGEND */
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-left:auto;font-size:.7rem;align-items:center}
+.leg-item{display:flex;align-items:center;gap:5px;color:#5a80a0}
+.leg-dot{width:10px;height:10px;border-radius:50%}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hdr-icon">⚾</div>
+  <div>
+    <div class="hdr-title">WPBR Majors Division — Spring 2026</div>
+    <div class="hdr-sub">Player Statistics Leaders Report &nbsp;·&nbsp; Season through April 21, 2026</div>
+  </div>
+  <div class="hdr-badges">
+    <span class="badge">70 Players</span>
+    <span class="badge">6 Teams</span>
+    <span class="badge gold">32 Pitchers</span>
+  </div>
+</header>
+
+<!-- SECTION TABS -->
+<div class="section-tabs">
+  <div class="section-tab active" data-section="hitting">🏏&nbsp; Hitting</div>
+  <div class="section-tab" data-section="pitching">⚡&nbsp; Pitching</div>
+  <div class="section-tab" data-section="fielding">🧤&nbsp; Fielding</div>
+</div>
+
+<!-- NOTE BAR -->
+<div class="note-bar" id="noteBar">
+  <b>Hitting stats</b> — All 70 players. Click any column header to sort. Use the controls below to filter by team, direction, and more.
+</div>
+
+<!-- TEAM FILTER -->
+<div class="team-bar" id="teamBar">
+  <div class="team-btn active" data-team="All">All Teams</div>
+  <div class="team-btn" data-team="WPBR MA Pirates">🏴‍☠️ Pirates</div>
+  <div class="team-btn" data-team="WPBR MA Yankees">🗽 Yankees</div>
+  <div class="team-btn" data-team="Brew Crew">🍺 Brew Crew</div>
+  <div class="team-btn" data-team="Mariners">⚓ Mariners</div>
+  <div class="team-btn" data-team="WPBR MA RAYS">☀️ Rays</div>
+  <div class="team-btn" data-team="WPBR MA Braves">🪓 Braves</div>
+</div>
+
+<!-- CONTROLS -->
+<div class="controls">
+  <div class="ctrl">
+    <label>Sort By</label>
+    <select id="sortSel"></select>
+  </div>
+  <div class="ctrl">
+    <label>Direction</label>
+    <div class="dir-wrap">
+      <button class="dir-btn active" id="btnDesc">↓ Best First</button>
+      <button class="dir-btn" id="btnAsc">↑ Worst First</button>
+    </div>
+  </div>
+  <div class="ctrl">
+    <label>Search</label>
+    <input type="text" id="searchBox" placeholder="Player name or team…" style="min-width:180px">
+  </div>
+  <div class="ctrl">
+    <label>Show Top</label>
+    <div class="topn-wrap">
+      <button class="topn-btn" data-n="10">Top 10</button>
+      <button class="topn-btn" data-n="25">Top 25</button>
+      <button class="topn-btn active" data-n="all">All</button>
+    </div>
+  </div>
+  <div class="info-pill">Showing <span id="countSpan">—</span> players</div>
+</div>
+
+<div class="table-wrap">
+  <table id="mainTable">
+    <thead><tr id="headRow"></tr></thead>
+    <tbody id="bodyRows"></tbody>
+  </table>
+  <div class="empty" id="emptyMsg" style="display:none">No players match your filters.</div>
+</div>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────────────────────
+const DATA = {
+hitting:[{"First Name":"Enzo","Last Name":"C","Team":"WPBR MA Pirates","Games Played":12,"Plate Appearances":35,"Batting Average":0.333,"Quality At-Bats":24,"Runs Batted In":13,"Hits":7,"On-base Percentage":0.6,"Slugging Percentage":0.619,"OPS":1.219,"Doubles":3,"Triples":0,"Home Runs":1},{"First Name":"Logan","Last Name":"A","Team":"WPBR MA Pirates","Games Played":12,"Plate Appearances":34,"Batting Average":0.32,"Quality At-Bats":17,"Runs Batted In":15,"Hits":8,"On-base Percentage":0.5,"Slugging Percentage":0.4,"OPS":0.9,"Doubles":0,"Triples":1,"Home Runs":0},{"First Name":"Jack","Last Name":"B","Team":"WPBR MA Pirates","Games Played":12,"Plate Appearances":36,"Batting Average":0.423,"Quality At-Bats":21,"Runs Batted In":10,"Hits":11,"On-base Percentage":0.583,"Slugging Percentage":0.538,"OPS":1.122,"Doubles":0,"Triples":0,"Home Runs":1},{"First Name":"Luis","Last Name":"C","Team":"WPBR MA Pirates","Games Played":10,"Plate Appearances":20,"Batting Average":0.316,"Quality At-Bats":6,"Runs Batted In":3,"Hits":6,"On-base Percentage":0.35,"Slugging Percentage":0.368,"OPS":0.718,"Doubles":1,"Triples":0,"Home Runs":0},{"First Name":"John","Last Name":"A","Team":"WPBR MA Pirates","Games Played":12,"Plate Appearances":36,"Batting Average":0.424,"Quality At-Bats":23,"Runs Batted In":16,"Hits":14,"On-base Percentage":0.472,"Slugging Percentage":0.606,"OPS":1.078,"Doubles":6,"Triples":0,"Home Runs":0},{"First Name":"Santiago","Last Name":"P","Team":"WPBR MA Pirates","Games Played":12,"Plate Appearances":33,"Batting Average":0.571,"Quality At-Bats":14,"Runs Batted In":17,"Hits":16,"On-base Percentage":0.636,"Slugging Percentage":0.714,"OPS":1.351,"Doubles":2,"Triples":1,"Home Runs":0},{"First Name":"Maddox","Last Name":"W","Team":"WPBR MA Pirates","Games Played":11,"Plate Appearances":25,"Batting Average":0.2,"Quality At-Bats":11,"Runs Batted In":2,"Hits":4,"On-base Percentage":0.36,"Slugging Percentage":0.2,"OPS":0.56,"Doubles":0,"Triples":0,"Home Runs":0},{"First Name":"Matt","Last Name":"M","Team":"WPBR MA Pirates","Games Played":12,"Plate Appearances":22,"Batting Average":0.053,"Quality At-Bats":7,"Runs Batted In":1,"Hits":1,"On-base Percentage":0.182,"Slugging Percentage":0.053,"OPS":0.234,"Doubles":0,"Triples":0,"Home Runs":0},{"First Name":"Andrew","Last Name":"H","Team":"WPBR MA Pirates","Games Played":12,"Plate Appearances":30,"Batting Average":0.192,"Quality At-Bats":13,"Runs Batted In":5,"Hits":5,"On-base Percentage":0.3,"Slugging Percentage":0.192,"OPS":0.492,"Doubles":0,"Triples":0,"Home Runs":0},{"First Name":"Vincent","Last Name":"V","Team":"WPBR MA Pirates","Games Played":12,"Plate Appearances":26,"Batting Average":0.278,"Quality At-Bats":15,"Runs Batted In":4,"Hits":5,"On-base Percentage":0.5,"Slugging Percentage":0.278,"OPS":0.778,"Doubles":0,"Triples":0,"Home Runs":0},{"First Name":"Jackson","Last Name":"H","Team":"WPBR MA Pirates","Games Played":10,"Plate Appearances":21,"Batting Average":0.071,"Quality At-Bats":11,"Runs Batted In":1,"Hits":1,"On-base Percentage":0.381,"Slugging Percentage":0.071,"OPS":0.452,"Doubles":0,"Triples":0,"Home Runs":0},{"First Name":"Marcus","Last Name":"B","Team":"WPBR MA Pirates","Games Played":12,"Plate Appearances":36,"Batting Average":0.333,"Quality At-Bats":22,"Runs Batted In":5,"Hits":7,"On-base Percentage":0.611,"Slugging Percentage":0.381,"OPS":0.992,"Doubles":1,"Triples":0,"Home Runs":0},{"First Name":"Tyler","Last Name":"M","Team":"WPBR MA Yankees","Games Played":10,"Plate Appearances":25,"Batting Average":0.158,"Quality At-Bats":14,"Runs Batted In":4,"Hits":3,"On-base Percentage":0.36,"Slugging Percentage":0.158,"OPS":0.518,"Doubles":0,"Triples":0,"Home Runs":0},{"First Name":"Mason","Last Name":"W","Team":"WPBR MA Yankees","Games Played":10,"Plate Appearances":23,"Batting Average":0,"Quality At-Bats":8,"Runs Batted In":1,"Hits":0,"On-base Percentage":0.174,"Slugging Percentage":0,"OPS":0.174,"Doubles":0,"Triples":0,"Home Runs":0},{"First Name":"Jack","Last Name":"C","Team":"WPBR MA Yankees","Games Played":8,"Plate Appearances":19,"Batting Average":0.2,"Quality At-Bats":11,"Runs Batted In":4,"Hits":3,"On-base Percentage":0.368,"Slugging Percentage":0.2,"OPS":0.568,"Doubles":0,"Triples":0,"Home Runs":0},{"First Name":"Evan","Last Name":"H","Team":"WPBR MA Yankees","Games Played":9,"Plate Appearances":26,"Batting Average":0.19,"Quality At-Bats":16,"Runs Batted In":2,"Hits":4,"On-base Percentage":0.346,"Slugging Percentage":0.238,"OPS":0.584,"Doubles":1,"Triples":0,"Home Runs":0},{"First Name":"Elias","Last Name":"T","Team":"WPBR MA Yankees","Games Played":9,"Plate Appearances":22,"Batting Average":0.211,"Quality At-Bats":6,"Runs Batted In":3,"Hits":4,"On-base Percentage":0.318,"Slugging Percentage":0.211,"OPS":0.529,"Doubles":0,"Triples":0,"Home Runs":0},{"First Name":"Jaxson","Last Name":"M","Team":"WPBR MA Yankees","Games Played":9,"Plate Appearances":25,"Batting Average":0.308,"Quality At-Bats":16,"Runs Batted In":4,"Hits":4,"On-base Percentage":0.64,"Slugging Percentage":0.385,"OPS":1.025,"Doubles":1,"Triples":0,"Home Runs":0},{"First Name":"Jack","Last Name":"L","Team":"WPBR MA Yankees","Games Played":9,"Plate Appearances":24,"Batting Average":0.438,"Quality At-Bats":14,"Runs Batted In":8,"Hits":7,"On-base Percentage":0.625,"Slugging Percentage":0.688,"OPS":1.313,"Doubles":4,"Triples":0,"Home Runs":0},{"First Name":"Anderson","Last Name":"P","Team":"WPBR MA Yankees","Games Played":10,"Plate Appearances":28,"Batting Average":0.13,"Quality At-Bats":13,"Runs Batted In":4,"Hits":3,"On-base Percentage":0.286,"Slugging Percentage":0.217,"OPS":0.503,"Doubles":0,"Triples":1,"Home Runs":0},{"First Name":"Charlie","Last Name":"H","Team":"WPBR MA Yankees","Games Played":9,"Plate Appearances":23,"Batting Average":0.25,"Quality At-Bats":11,"Runs Batted In":0,"Hits":5,"On-base Percentage":0.348,"Slugging Percentage":0.4,"OPS":0.748,"Doubles":1,"Triples":1,"Home Runs":0},{"First Name":"Jandre","Last Name":"S","Team":"WPBR MA Yankees","Games Played":9,"Plate Appearances":24,"Batting Average":0.55,"Quality At-Bats":11,"Runs Batted In":5,"Hits":11,"On-base Percentage":0.625,"Slugging Percentage":0.7,"OPS":1.325,"Doubles":1,"Triples":1,"Home Runs":0},{"First Name":"Mateo","Last Name":"C","Team":"WPBR MA Yankees","Games Played":10,"Plate Appearances":26,"Batting Average":0.429,"Quality At-Bats":14,"Runs Batted In":5,"Hits":9,"On-base Percentage":0.538,"Slugging Percentage":0.524,"OPS":1.062,"Doubles":0,"Triples":1,"Home Runs":0},{"First Name":"Andy","Last Name":"T","Team":"Brew Crew","Games Played":10,"Plate Appearances":23,"Batting Average":0.176,"Quality At-Bats":11,"Runs Batted In":0,"Hits":3,"On-base Percentage":0.391,"Slugging Percentage":0.176,"OPS":0.568,"Doubles":0,"Triples":0,"Home Runs":0},{"First Name":"Daren","Last Name":"C","Team":"Brew Crew","Games Played":9,"Plate Appearances":19,"Batting Average":0,"Quality At-Bats":11,"Runs Batted In":0,"Hits":0,"On-base Percentage":0.474,"Slugging Percentage":0,"OPS":0.474,"Doubles":0,"Triples":0,"Home Runs":0},{"First Name":"Connor","Last Name":"C","Team":"Brew Crew","Games Played":10,"Plate Appearances":24,"Batting Average":0.571,"Quality At-Bats":9,"Runs Batted In":10,"Hits":12,"On-base Percentage":0.625,"Slugging Percentage":0.619,"OPS":1.244,"Doubles":1,"Triples":0,"Home Runs":0},{"First Name":"Denver","Last Name":"C","Team":"Brew Crew","Games Played":6,"Plate Appearances":17,"Batting Average":0.385,"Quality At-Bats":8,"Runs Batted In":7,"Hits":5,"On-base Percentage":0.529,"Slugging Percentage":0.692,"OPS":1.222,"Doubles":1,"Triples":0,"Home Runs":1},{"First Name":"Aidan","Last Name":"A","Team":"Brew Crew","Games Played":10,"Plate Appearances":19,"Batting Average":0.2,"Quality At-Bats":12,"Runs Batted In":0,"Hits":2,"On-base Percentage":0.579,"Slugging Percentage":0.2,"OPS":0.779,"Doubles":0,"Triples":0,"Home Runs":0},{"First Name":"Luca","Last Name":"T","Team":"Brew Crew","Games Played":10,"Plate Appearances":24,"Batting Average":0.273,"Quality At-Bats":6,"Runs Batted In":5,"Hits":6,"On-base Percentage":0.333,"Slugging Percentage":0.318,"OPS":0.652,"Doubles":1,"Triples":0,"Home Runs":0},{"First Name":"Adriel","Last Name":"A","Team":"Brew Crew","Games Played":10,"Plate Appearances":21,"Batting Average":0.071,"Quality At-Bats":9,"Runs Batted In":2,"Hits":1,"On-base Percentage":0.381,"Slugging Percentage":0.071,"OPS":0.452,"Doubles":0,"Triples":0,"Home Runs":0},{"First Name":"Jax","Last Name":"J","Team":"Brew Crew","Games Played":9,"Plate Appearances":21,"Batting Average":0.444,"Quality At-Bats":12,"Runs Batted In":7,"Hits":8,"On-base Percentage":0.476,"Slugging Percentage":0.556,"OPS":1.032,"Doubles":2,"Triples":0,"Home Runs":0},{"First Name":"Cuinn","Last Name":"C","Team":"Brew Crew","Games Played":4,"Plate Appearances":10,"Batting Average":0.625,"Quality At-Bats":6,"Runs Batted In":1,"Hits":5,"On-base Percentage":0.7,"Slugging Percentage":0.875,"OPS":1.575,"Doubles":2,"Triples":0,"Home Runs":0},{"First Name":"Brody","Last Name":"C","Team":"Brew Crew","Games Played":10,"Plate Appearances":26,"Batting Average":0.36,"Quality At-Bats":9,"Runs Batted In":2,"Hits":9,"On-base Percentage":0.385,"Slugging Percentage":0.44,"OPS":0.825,"Doubles":2,"Triples":0,"Home Runs":0},{"First Name":"Sutton","Last Name":"C","Team":"Brew Crew","Games Played":10,"Plate Appearances":25,"Batting Average":0.25,"Quality At-Bats":10,"Runs Batted In":3,"Hits":4,"On-base Percentage":0.52,"Slugging Percentage":0.25,"OPS":0.77,"Doubles":0,"Triples":0,"Home Runs":0},{"First Name":"Maddox","Last Name":"M","Team":"Brew Crew","Games Played":10,"Plate Appearances":25,"Batting Average":0.5,"Quality At-Bats":11,"Runs Batted In":5,"Hits":11,"On-base Percentage":0.56,"Slugging Percentage":0.591,"OPS":1.151,"Doubles":2,"Triples":0,"Home Runs":0},{"First Name":"Alexander","Last Name":"F","Team":"Mariners","Games Played":7,"Plate Appearances":18,"Batting Average":0.5,"Quality At-Bats":12,"Runs Batted In":4,"Hits":7,"On-base Percentage":0.611,"Slugging Percentage":0.5,"OPS":1.111,"Doubles":0,"Triples":0,"Home Runs":0},{"First Name":"Nelson","Last Name":"Q","Team":"Mariners","Games Played":8,"Plate Appearances":16,"Batting Average":0.167,"Quality At-Bats":11,"Runs Batted In":1,"Hits":2,"On-base Percentage":0.375,"Slugging Percentage":0.25,"OPS":0.625,"Doubles":1,"Triples":0,"Home Runs":0},{"First Name":"Jack","Last Name":"D","Team":"Mariners","Games Played":5,"Plate Appearances":12,"Batting Average":0.25,"Quality At-Bats":7,"Runs Batted In":2,"Hits":2,"On-base Percentage":0.5,"Slugging Percentage":0.375,"OPS":0.875,"Doubles":1,"Triples":0,"Home Runs":0},{"First Name":"Abe","Last Name":"H","Team":"Mariners","Games Played":6,"Plate Appearances":18,"Batting Average":0.438,"Quality At-Bats":12,"Runs Batted In":4,"Hits":7,"On-base Percentage":0.5,"Slugging Percentage":0.813,"OPS":1.313,"Doubles":0,"Triples":0,"Home Runs":2},{"First Name":"Myles","Last Name":"G","Team":"Mariners","Games Played":8,"Plate Appearances":17,"Batting Average":0,"Quality At-Bats":7,"Runs Batted In":1,"Hits":0,"On-base Percentage":0.294,"Slugging Percentage":0,"OPS":0.294,"Doubles":0,"Triples":0,"Home Runs":0},{"First Name":"Micah","Last Name":"H","Team":"Mariners","Games Played":6,"Plate Appearances":17,"Batting Average":0.333,"Quality At-Bats":6,"Runs Batted In":3,"Hits":4,"On-base Percentage":0.529,"Slugging Percentage":0.333,"OPS":0.863,"Doubles":0,"Triples":0,"Home Runs":0},{"First Name":"Graham","Last Name":"G","Team":"Mariners","Games Played":8,"Plate Appearances":16,"Batting Average":0,"Quality At-Bats":3,"Runs Batted In":0,"Hits":0,"On-base Percentage":0.188,"Slugging Percentage":0,"OPS":0.188,"Doubles":0,"Triples":0,"Home Runs":0},{"First Name":"Will","Last Name":"A","Team":"Mariners","Games Played":7,"Plate Appearances":19,"Batting Average":0.467,"Quality At-Bats":9,"Runs Batted In":5,"Hits":7,"On-base Percentage":0.579,"Slugging Percentage":0.533,"OPS":1.112,"Doubles":1,"Triples":0,"Home Runs":0},{"First Name":"Mason","Last Name":"H","Team":"Mariners","Games Played":10,"Plate Appearances":23,"Batting Average":0.214,"Quality At-Bats":16,"Runs Batted In":2,"Hits":3,"On-base Percentage":0.522,"Slugging Percentage":0.214,"OPS":0.736,"Doubles":0,"Triples":0,"Home Runs":0},{"First Name":"Duke","Last Name":"M","Team":"Mariners","Games Played":8,"Plate Appearances":19,"Batting Average":0.111,"Quality At-Bats":14,"Runs Batted In":0,"Hits":1,"On-base Percentage":0.579,"Slugging Percentage":0.111,"OPS":0.69,"Doubles":0,"Triples":0,"Home Runs":0},{"First Name":"David","Last Name":"G","Team":"Mariners","Games Played":6,"Plate Appearances":15,"Batting Average":0.385,"Quality At-Bats":3,"Runs Batted In":0,"Hits":5,"On-base Percentage":0.467,"Slugging Percentage":0.385,"OPS":0.851,"Doubles":0,"Triples":0,"Home Runs":0},{"First Name":"Luke","Last Name":"S","Team":"Mariners","Games Played":6,"Plate Appearances":17,"Batting Average":0.5,"Quality At-Bats":11,"Runs Batted In":6,"Hits":7,"On-base Percentage":0.588,"Slugging Percentage":0.714,"OPS":1.303,"Doubles":3,"Triples":0,"Home Runs":0},{"First Name":"Archie","Last Name":"V","Team":"WPBR MA RAYS","Games Played":10,"Plate Appearances":22,"Batting Average":0.3,"Quality At-Bats":7,"Runs Batted In":5,"Hits":6,"On-base Percentage":0.364,"Slugging Percentage":0.45,"OPS":0.814,"Doubles":3,"Triples":0,"Home Runs":0},{"First Name":"Harrison","Last Name":"F","Team":"WPBR MA RAYS","Games Played":12,"Plate Appearances":28,"Batting Average":0,"Quality At-Bats":13,"Runs Batted In":2,"Hits":0,"On-base Percentage":0.286,"Slugging Percentage":0,"OPS":0.286,"Doubles":0,"Triples":0,"Home Runs":0},{"First Name":"Trevor","Last Name":"W","Team":"WPBR MA RAYS","Games Played":12,"Plate Appearances":31,"Batting Average":0.211,"Quality At-Bats":12,"Runs Batted In":1,"Hits":4,"On-base Percentage":0.516,"Slugging Percentage":0.211,"OPS":0.727,"Doubles":0,"Triples":0,"Home Runs":0},{"First Name":"Teddy","Last Name":"F","Team":"WPBR MA RAYS","Games Played":12,"Plate Appearances":29,"Batting Average":0.208,"Quality At-Bats":14,"Runs Batted In":7,"Hits":5,"On-base Percentage":0.345,"Slugging Percentage":0.25,"OPS":0.595,"Doubles":1,"Triples":0,"Home Runs":0},{"First Name":"Zion","Last Name":"A","Team":"WPBR MA RAYS","Games Played":11,"Plate Appearances":22,"Batting Average":0.167,"Quality At-Bats":7,"Runs Batted In":1,"Hits":3,"On-base Percentage":0.318,"Slugging Percentage":0.278,"OPS":0.596,"Doubles":2,"Triples":0,"Home Runs":0},{"First Name":"Grant","Last Name":"H","Team":"WPBR MA RAYS","Games Played":12,"Plate Appearances":27,"Batting Average":0.143,"Quality At-Bats":17,"Runs Batted In":3,"Hits":2,"On-base Percentage":0.556,"Slugging Percentage":0.143,"OPS":0.698,"Doubles":0,"Triples":0,"Home Runs":0},{"First Name":"Rylan","Last Name":"H","Team":"WPBR MA RAYS","Games Played":10,"Plate Appearances":25,"Batting Average":0.188,"Quality At-Bats":15,"Runs Batted In":3,"Hits":3,"On-base Percentage":0.48,"Slugging Percentage":0.313,"OPS":0.793,"Doubles":0,"Triples":1,"Home Runs":0},{"First Name":"Brayden","Last Name":"M","Team":"WPBR MA RAYS","Games Played":9,"Plate Appearances":22,"Batting Average":0.444,"Quality At-Bats":11,"Runs Batted In":6,"Hits":8,"On-base Percentage":0.545,"Slugging Percentage":0.556,"OPS":1.101,"Doubles":2,"Triples":0,"Home Runs":0},{"First Name":"Hudson","Last Name":"H","Team":"WPBR MA RAYS","Games Played":11,"Plate Appearances":30,"Batting Average":0.5,"Quality At-Bats":18,"Runs Batted In":5,"Hits":9,"On-base Percentage":0.7,"Slugging Percentage":0.5,"OPS":1.2,"Doubles":0,"Triples":0,"Home Runs":0},{"First Name":"Carter","Last Name":"W","Team":"WPBR MA RAYS","Games Played":12,"Plate Appearances":29,"Batting Average":0.192,"Quality At-Bats":9,"Runs Batted In":2,"Hits":5,"On-base Percentage":0.276,"Slugging Percentage":0.192,"OPS":0.468,"Doubles":0,"Triples":0,"Home Runs":0},{"First Name":"Grant","Last Name":"B","Team":"WPBR MA RAYS","Games Played":10,"Plate Appearances":20,"Batting Average":0,"Quality At-Bats":12,"Runs Batted In":2,"Hits":0,"On-base Percentage":0.4,"Slugging Percentage":0,"OPS":0.4,"Doubles":0,"Triples":0,"Home Runs":0},{"First Name":"Trent","Last Name":"M","Team":"WPBR MA Braves","Games Played":7,"Plate Appearances":20,"Batting Average":0,"Quality At-Bats":14,"Runs Batted In":1,"Hits":0,"On-base Percentage":0.5,"Slugging Percentage":0,"OPS":0.5,"Doubles":0,"Triples":0,"Home Runs":0},{"First Name":"Caiden","Last Name":"R","Team":"WPBR MA Braves","Games Played":10,"Plate Appearances":28,"Batting Average":0.333,"Quality At-Bats":13,"Runs Batted In":9,"Hits":7,"On-base Percentage":0.5,"Slugging Percentage":0.333,"OPS":0.833,"Doubles":0,"Triples":0,"Home Runs":0},{"First Name":"Liam","Last Name":"S","Team":"WPBR MA Braves","Games Played":9,"Plate Appearances":28,"Batting Average":0.56,"Quality At-Bats":18,"Runs Batted In":3,"Hits":14,"On-base Percentage":0.607,"Slugging Percentage":0.72,"OPS":1.327,"Doubles":4,"Triples":0,"Home Runs":0},{"First Name":"Roman","Last Name":"G","Team":"WPBR MA Braves","Games Played":10,"Plate Appearances":33,"Batting Average":0.375,"Quality At-Bats":14,"Runs Batted In":12,"Hits":9,"On-base Percentage":0.545,"Slugging Percentage":0.417,"OPS":0.962,"Doubles":1,"Triples":0,"Home Runs":0},{"First Name":"Jesse","Last Name":"C","Team":"WPBR MA Braves","Games Played":7,"Plate Appearances":17,"Batting Average":0,"Quality At-Bats":5,"Runs Batted In":3,"Hits":0,"On-base Percentage":0.353,"Slugging Percentage":0,"OPS":0.353,"Doubles":0,"Triples":0,"Home Runs":0},{"First Name":"Niam","Last Name":"C","Team":"WPBR MA Braves","Games Played":8,"Plate Appearances":22,"Batting Average":0.143,"Quality At-Bats":12,"Runs Batted In":2,"Hits":2,"On-base Percentage":0.455,"Slugging Percentage":0.214,"OPS":0.669,"Doubles":1,"Triples":0,"Home Runs":0},{"First Name":"Matthew","Last Name":"K","Team":"WPBR MA Braves","Games Played":9,"Plate Appearances":29,"Batting Average":0.409,"Quality At-Bats":16,"Runs Batted In":8,"Hits":9,"On-base Percentage":0.552,"Slugging Percentage":0.591,"OPS":1.143,"Doubles":4,"Triples":0,"Home Runs":0},{"First Name":"Dalton","Last Name":"F","Team":"WPBR MA Braves","Games Played":10,"Plate Appearances":25,"Batting Average":0.091,"Quality At-Bats":16,"Runs Batted In":1,"Hits":1,"On-base Percentage":0.6,"Slugging Percentage":0.091,"OPS":0.691,"Doubles":0,"Triples":0,"Home Runs":0},{"First Name":"Beckett","Last Name":"C","Team":"WPBR MA Braves","Games Played":10,"Plate Appearances":31,"Batting Average":0.5,"Quality At-Bats":16,"Runs Batted In":11,"Hits":11,"On-base Percentage":0.633,"Slugging Percentage":0.682,"OPS":1.315,"Doubles":1,"Triples":0,"Home Runs":1},{"First Name":"Joaquin","Last Name":"B","Team":"WPBR MA Braves","Games Played":3,"Plate Appearances":5,"Batting Average":0.5,"Quality At-Bats":3,"Runs Batted In":2,"Hits":2,"On-base Percentage":0.6,"Slugging Percentage":0.5,"OPS":1.1,"Doubles":0,"Triples":0,"Home Runs":0},{"First Name":"Paul","Last Name":"A","Team":"WPBR MA Braves","Games Played":10,"Plate Appearances":33,"Batting Average":0.423,"Quality At-Bats":13,"Runs Batted In":14,"Hits":11,"On-base Percentage":0.545,"Slugging Percentage":0.615,"OPS":1.161,"Doubles":0,"Triples":1,"Home Runs":1},{"First Name":"Grayson","Last Name":"W","Team":"WPBR MA Braves","Games Played":10,"Plate Appearances":29,"Batting Average":0.348,"Quality At-Bats":14,"Runs Batted In":5,"Hits":8,"On-base Percentage":0.483,"Slugging Percentage":0.348,"OPS":0.831,"Doubles":0,"Triples":0,"Home Runs":0}],
+
+pitching:[{"First Name":"Enzo","Last Name":"C","Team":"WPBR MA Pirates","Innings Pitched":13,"ERA":9.22,"Wins":null,"Strikeouts":19,"WHIP":2.78,"BAA":0.276},{"First Name":"Logan","Last Name":"A","Team":"WPBR MA Pirates","Innings Pitched":3,"ERA":16,"Wins":null,"Strikeouts":5,"WHIP":3.33,"BAA":0.308},{"First Name":"Jack","Last Name":"B","Team":"WPBR MA Pirates","Innings Pitched":19,"ERA":7.32,"Wins":null,"Strikeouts":32,"WHIP":2.29,"BAA":0.259},{"First Name":"John","Last Name":"A","Team":"WPBR MA Pirates","Innings Pitched":14,"ERA":8.79,"Wins":null,"Strikeouts":20,"WHIP":2.37,"BAA":0.23},{"First Name":"Andrew","Last Name":"H","Team":"WPBR MA Pirates","Innings Pitched":4,"ERA":3,"Wins":null,"Strikeouts":4,"WHIP":3,"BAA":0.235},{"First Name":"Marcus","Last Name":"B","Team":"WPBR MA Pirates","Innings Pitched":3,"ERA":2,"Wins":null,"Strikeouts":5,"WHIP":1.33,"BAA":0.111},{"First Name":"Tyler","Last Name":"M","Team":"WPBR MA Yankees","Innings Pitched":20,"ERA":6.2,"Wins":null,"Strikeouts":18,"WHIP":2.56,"BAA":0.441},{"First Name":"Jaxson","Last Name":"M","Team":"WPBR MA Yankees","Innings Pitched":9,"ERA":12.21,"Wins":null,"Strikeouts":12,"WHIP":3.21,"BAA":0.275},{"First Name":"Anderson","Last Name":"P","Team":"WPBR MA Yankees","Innings Pitched":4,"ERA":7.71,"Wins":null,"Strikeouts":7,"WHIP":3.21,"BAA":0.2},{"First Name":"Charlie","Last Name":"H","Team":"WPBR MA Yankees","Innings Pitched":1,"ERA":13.5,"Wins":null,"Strikeouts":2,"WHIP":6.75,"BAA":0.25},{"First Name":"Mateo","Last Name":"C","Team":"WPBR MA Yankees","Innings Pitched":11,"ERA":10.59,"Wins":null,"Strikeouts":29,"WHIP":3.27,"BAA":0.057},{"First Name":"Connor","Last Name":"C","Team":"Brew Crew","Innings Pitched":18,"ERA":2.29,"Wins":1,"Strikeouts":31,"WHIP":1.31,"BAA":0.172},{"First Name":"Denver","Last Name":"C","Team":"Brew Crew","Innings Pitched":3,"ERA":12,"Wins":null,"Strikeouts":7,"WHIP":4,"BAA":0.286},{"First Name":"Jax","Last Name":"J","Team":"Brew Crew","Innings Pitched":2,"ERA":0,"Wins":null,"Strikeouts":1,"WHIP":1.5,"BAA":0.143},{"First Name":"Cuinn","Last Name":"C","Team":"Brew Crew","Innings Pitched":3,"ERA":8.18,"Wins":null,"Strikeouts":5,"WHIP":4.09,"BAA":0.333},{"First Name":"Brody","Last Name":"C","Team":"Brew Crew","Innings Pitched":5,"ERA":3.18,"Wins":null,"Strikeouts":7,"WHIP":1.24,"BAA":0.095},{"First Name":"Maddox","Last Name":"M","Team":"Brew Crew","Innings Pitched":11,"ERA":7.41,"Wins":0,"Strikeouts":16,"WHIP":2.56,"BAA":0.37},{"First Name":"Abe","Last Name":"H","Team":"Mariners","Innings Pitched":11,"ERA":3.27,"Wins":1,"Strikeouts":26,"WHIP":0.91,"BAA":0.179},{"First Name":"Micah","Last Name":"H","Team":"Mariners","Innings Pitched":7,"ERA":13.3,"Wins":0,"Strikeouts":15,"WHIP":3.39,"BAA":0.422},{"First Name":"Will","Last Name":"A","Team":"Mariners","Innings Pitched":7,"ERA":12.86,"Wins":null,"Strikeouts":11,"WHIP":3,"BAA":0.306},{"First Name":"Mason","Last Name":"H","Team":"Mariners","Innings Pitched":6,"ERA":18.95,"Wins":null,"Strikeouts":10,"WHIP":4.89,"BAA":0.361},{"First Name":"Luke","Last Name":"S","Team":"Mariners","Innings Pitched":5,"ERA":6.75,"Wins":null,"Strikeouts":5,"WHIP":1.5,"BAA":0.15},{"First Name":"Archie","Last Name":"V","Team":"WPBR MA RAYS","Innings Pitched":6,"ERA":19.9,"Wins":null,"Strikeouts":10,"WHIP":5.21,"BAA":0.333},{"First Name":"Harrison","Last Name":"F","Team":"WPBR MA RAYS","Innings Pitched":12,"ERA":9,"Wins":null,"Strikeouts":10,"WHIP":3.42,"BAA":0.409},{"First Name":"Teddy","Last Name":"F","Team":"WPBR MA RAYS","Innings Pitched":10,"ERA":8.4,"Wins":0,"Strikeouts":7,"WHIP":3.7,"BAA":0.443},{"First Name":"Hudson","Last Name":"H","Team":"WPBR MA RAYS","Innings Pitched":23,"ERA":8.35,"Wins":null,"Strikeouts":21,"WHIP":2.65,"BAA":0.4},{"First Name":"Caiden","Last Name":"R","Team":"WPBR MA Braves","Innings Pitched":7,"ERA":3.27,"Wins":null,"Strikeouts":15,"WHIP":2.18,"BAA":0.16},{"First Name":"Liam","Last Name":"S","Team":"WPBR MA Braves","Innings Pitched":11,"ERA":2.57,"Wins":null,"Strikeouts":24,"WHIP":1.54,"BAA":0.108},{"First Name":"Roman","Last Name":"G","Team":"WPBR MA Braves","Innings Pitched":11,"ERA":3.71,"Wins":null,"Strikeouts":21,"WHIP":1.85,"BAA":0.286},{"First Name":"Niam","Last Name":"C","Team":"WPBR MA Braves","Innings Pitched":2,"ERA":0,"Wins":null,"Strikeouts":3,"WHIP":1.5,"BAA":0.286},{"First Name":"Matthew","Last Name":"K","Team":"WPBR MA Braves","Innings Pitched":5,"ERA":3.38,"Wins":null,"Strikeouts":11,"WHIP":1.5,"BAA":0.1},{"First Name":"Paul","Last Name":"A","Team":"WPBR MA Braves","Innings Pitched":9,"ERA":9,"Wins":null,"Strikeouts":16,"WHIP":2.89,"BAA":0.308}],
+
+fielding:[{"First Name":"Enzo","Last Name":"C","Team":"WPBR MA Pirates","Fielding Percentage":0.8,"Putouts":11},{"First Name":"Logan","Last Name":"A","Team":"WPBR MA Pirates","Fielding Percentage":0.714,"Putouts":10},{"First Name":"Jack","Last Name":"B","Team":"WPBR MA Pirates","Fielding Percentage":0.632,"Putouts":11},{"First Name":"John","Last Name":"A","Team":"WPBR MA Pirates","Fielding Percentage":0.889,"Putouts":40},{"First Name":"Santiago","Last Name":"P","Team":"WPBR MA Pirates","Fielding Percentage":0.902,"Putouts":37},{"First Name":"Maddox","Last Name":"W","Team":"WPBR MA Pirates","Fielding Percentage":1,"Putouts":1},{"First Name":"Andrew","Last Name":"H","Team":"WPBR MA Pirates","Fielding Percentage":1,"Putouts":25},{"First Name":"Vincent","Last Name":"V","Team":"WPBR MA Pirates","Fielding Percentage":0.857,"Putouts":6},{"First Name":"Jackson","Last Name":"H","Team":"WPBR MA Pirates","Fielding Percentage":1,"Putouts":2},{"First Name":"Marcus","Last Name":"B","Team":"WPBR MA Pirates","Fielding Percentage":1,"Putouts":10},{"First Name":"Tyler","Last Name":"M","Team":"WPBR MA Yankees","Fielding Percentage":0.909,"Putouts":8},{"First Name":"Jack","Last Name":"C","Team":"WPBR MA Yankees","Fielding Percentage":0.667,"Putouts":2},{"First Name":"Evan","Last Name":"H","Team":"WPBR MA Yankees","Fielding Percentage":0.967,"Putouts":29},{"First Name":"Elias","Last Name":"T","Team":"WPBR MA Yankees","Fielding Percentage":0.6,"Putouts":1},{"First Name":"Jaxson","Last Name":"M","Team":"WPBR MA Yankees","Fielding Percentage":0.833,"Putouts":8},{"First Name":"Jack","Last Name":"L","Team":"WPBR MA Yankees","Fielding Percentage":0.882,"Putouts":13},{"First Name":"Anderson","Last Name":"P","Team":"WPBR MA Yankees","Fielding Percentage":0.857,"Putouts":36},{"First Name":"Charlie","Last Name":"H","Team":"WPBR MA Yankees","Fielding Percentage":0.8,"Putouts":7},{"First Name":"Jandre","Last Name":"S","Team":"WPBR MA Yankees","Fielding Percentage":0.6,"Putouts":3},{"First Name":"Mateo","Last Name":"C","Team":"WPBR MA Yankees","Fielding Percentage":0.818,"Putouts":15},{"First Name":"Andy","Last Name":"T","Team":"Brew Crew","Fielding Percentage":1,"Putouts":5},{"First Name":"Connor","Last Name":"C","Team":"Brew Crew","Fielding Percentage":1,"Putouts":11},{"First Name":"Denver","Last Name":"C","Team":"Brew Crew","Fielding Percentage":1,"Putouts":6},{"First Name":"Aidan","Last Name":"A","Team":"Brew Crew","Fielding Percentage":0,"Putouts":0},{"First Name":"Luca","Last Name":"T","Team":"Brew Crew","Fielding Percentage":1,"Putouts":1},{"First Name":"Adriel","Last Name":"A","Team":"Brew Crew","Fielding Percentage":0.333,"Putouts":1},{"First Name":"Jax","Last Name":"J","Team":"Brew Crew","Fielding Percentage":0.973,"Putouts":34},{"First Name":"Cuinn","Last Name":"C","Team":"Brew Crew","Fielding Percentage":1,"Putouts":5},{"First Name":"Brody","Last Name":"C","Team":"Brew Crew","Fielding Percentage":0.75,"Putouts":6},{"First Name":"Sutton","Last Name":"C","Team":"Brew Crew","Fielding Percentage":0.889,"Putouts":6},{"First Name":"Maddox","Last Name":"M","Team":"Brew Crew","Fielding Percentage":1,"Putouts":8},{"First Name":"Alexander","Last Name":"F","Team":"Mariners","Fielding Percentage":0.333,"Putouts":1},{"First Name":"Nelson","Last Name":"Q","Team":"Mariners","Fielding Percentage":0.5,"Putouts":1},{"First Name":"Jack","Last Name":"D","Team":"Mariners","Fielding Percentage":0.4,"Putouts":2},{"First Name":"Abe","Last Name":"H","Team":"Mariners","Fielding Percentage":0.769,"Putouts":10},{"First Name":"Myles","Last Name":"G","Team":"Mariners","Fielding Percentage":1,"Putouts":1},{"First Name":"Micah","Last Name":"H","Team":"Mariners","Fielding Percentage":0.75,"Putouts":3},{"First Name":"Graham","Last Name":"G","Team":"Mariners","Fielding Percentage":0,"Putouts":0},{"First Name":"Will","Last Name":"A","Team":"Mariners","Fielding Percentage":0.913,"Putouts":20},{"First Name":"Mason","Last Name":"H","Team":"Mariners","Fielding Percentage":0.923,"Putouts":24},{"First Name":"Duke","Last Name":"M","Team":"Mariners","Fielding Percentage":1,"Putouts":7},{"First Name":"David","Last Name":"G","Team":"Mariners","Fielding Percentage":0.636,"Putouts":7},{"First Name":"Luke","Last Name":"S","Team":"Mariners","Fielding Percentage":1,"Putouts":28},{"First Name":"Archie","Last Name":"V","Team":"WPBR MA RAYS","Fielding Percentage":0.917,"Putouts":11},{"First Name":"Harrison","Last Name":"F","Team":"WPBR MA RAYS","Fielding Percentage":0.786,"Putouts":9},{"First Name":"Trevor","Last Name":"W","Team":"WPBR MA RAYS","Fielding Percentage":1,"Putouts":2},{"First Name":"Teddy","Last Name":"F","Team":"WPBR MA RAYS","Fielding Percentage":0.857,"Putouts":5},{"First Name":"Grant","Last Name":"H","Team":"WPBR MA RAYS","Fielding Percentage":1,"Putouts":1},{"First Name":"Rylan","Last Name":"H","Team":"WPBR MA RAYS","Fielding Percentage":1,"Putouts":1},{"First Name":"Hudson","Last Name":"H","Team":"WPBR MA RAYS","Fielding Percentage":0.813,"Putouts":7},{"First Name":"Carter","Last Name":"W","Team":"WPBR MA RAYS","Fielding Percentage":1,"Putouts":2},{"First Name":"Trent","Last Name":"M","Team":"WPBR MA Braves","Fielding Percentage":0.5,"Putouts":0},{"First Name":"Caiden","Last Name":"R","Team":"WPBR MA Braves","Fielding Percentage":0.927,"Putouts":34},{"First Name":"Liam","Last Name":"S","Team":"WPBR MA Braves","Fielding Percentage":0.875,"Putouts":4},{"First Name":"Roman","Last Name":"G","Team":"WPBR MA Braves","Fielding Percentage":0.962,"Putouts":24},{"First Name":"Niam","Last Name":"C","Team":"WPBR MA Braves","Fielding Percentage":0.5,"Putouts":null},{"First Name":"Matthew","Last Name":"K","Team":"WPBR MA Braves","Fielding Percentage":1,"Putouts":4},{"First Name":"Dalton","Last Name":"F","Team":"WPBR MA Braves","Fielding Percentage":0,"Putouts":0},{"First Name":"Joaquin","Last Name":"B","Team":"WPBR MA Braves","Fielding Percentage":1,"Putouts":1},{"First Name":"Paul","Last Name":"A","Team":"WPBR MA Braves","Fielding Percentage":0.962,"Putouts":21},{"First Name":"Grayson","Last Name":"W","Team":"WPBR MA Braves","Fielding Percentage":1,"Putouts":2}]
+};
+
+// ─── SCHEMA ──────────────────────────────────────────────────────────────────
+// lowerIsBetter: for ERA/WHIP/BAA, lower = better so sort desc = ascending numerically
+const SCHEMA = {
+  hitting: {
+    cols: [
+      {key:'First Name', label:'Player', type:'name'},
+      {key:'Team', label:'Team', type:'team'},
+      {key:'Games Played', label:'G', type:'bar', tip:'Games Played'},
+      {key:'Plate Appearances', label:'PA', type:'bar', tip:'Plate Appearances'},
+      {key:'Batting Average', label:'AVG', type:'pct3', tip:'Batting Average', bar:true},
+      {key:'Quality At-Bats', label:'QAB', type:'num', tip:'Quality At-Bats', bar:true},
+      {key:'Hits', label:'H', type:'num', tip:'Hits', bar:true},
+      {key:'Runs Batted In', label:'RBI', type:'num', tip:'Runs Batted In', bar:true},
+      {key:'On-base Percentage', label:'OBP', type:'pct3', tip:'On-Base Percentage', bar:true},
+      {key:'Slugging Percentage', label:'SLG', type:'pct3', tip:'Slugging Percentage', bar:true},
+      {key:'OPS', label:'OPS', type:'dec3', tip:'On-Base + Slugging (OPS)', bar:true},
+      {key:'Doubles', label:'2B', type:'num', tip:'Doubles'},
+      {key:'Triples', label:'3B', type:'num', tip:'Triples'},
+      {key:'Home Runs', label:'HR', type:'num', tip:'Home Runs'},
+    ],
+    defaultSort: 'OPS',
+    note: '<b>Hitting stats</b> — All 70 players. Click any column header to sort.'
+  },
+  pitching: {
+    cols: [
+      {key:'First Name', label:'Player', type:'name'},
+      {key:'Team', label:'Team', type:'team'},
+      {key:'Innings Pitched', label:'IP', type:'num', tip:'Innings Pitched', bar:true},
+      {key:'ERA', label:'ERA', type:'dec2', tip:'Earned Run Average (lower is better)', lowerBetter:true, bar:true},
+      {key:'Wins', label:'W', type:'num', tip:'Wins'},
+      {key:'Strikeouts', label:'K', type:'num', tip:'Strikeouts', bar:true},
+      {key:'WHIP', label:'WHIP', type:'dec2', tip:'Walks + Hits per Inning Pitched (lower is better)', lowerBetter:true, bar:true},
+      {key:'BAA', label:'BAA', type:'pct3', tip:'Batting Average Against (lower is better)', lowerBetter:true, bar:true},
+    ],
+    defaultSort: 'ERA',
+    note: '<b>Pitching stats</b> — 32 pitchers with recorded innings. For ERA, WHIP, and BAA: <span style="color:#2dc87a">lower is better</span>.'
+  },
+  fielding: {
+    cols: [
+      {key:'First Name', label:'Player', type:'name'},
+      {key:'Team', label:'Team', type:'team'},
+      {key:'Fielding Percentage', label:'FLD%', type:'pct3', tip:'Fielding Percentage', bar:true},
+      {key:'Putouts', label:'PO', type:'num', tip:'Putouts', bar:true},
+    ],
+    defaultSort: 'Fielding Percentage',
+    note: '<b>Fielding stats</b> — 61 players with fielding data recorded.'
+  }
+};
+
+const TEAM_COLORS = {
+  'WPBR MA Pirates':'#f4a827','WPBR MA Yankees':'#3b9eff','Brew Crew':'#ffcc44',
+  'Mariners':'#00b4d8','WPBR MA RAYS':'#ffd700','WPBR MA Braves':'#2dc87a'
+};
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+let state = {
+  section: 'hitting',
+  team: 'All',
+  sortKey: 'OPS',
+  sortDesc: true,
+  topN: 'all',
+  search: ''
+};
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+function fmt(v, type) {
+  if (v === null || v === undefined) return '—';
+  if (type === 'pct3') return v.toFixed(3).replace(/^0/, '');
+  if (type === 'dec3') return v.toFixed(3);
+  if (type === 'dec2') return v.toFixed(2);
+  if (type === 'num' || type === 'bar') return v;
+  return v;
+}
+
+function colRange(data, key) {
+  const vals = data.map(r => r[key]).filter(v => v !== null && v !== undefined);
+  return {mn: Math.min(...vals), mx: Math.max(...vals)};
+}
+
+function barPct(v, mn, mx, lowerBetter) {
+  if (mx === mn) return 50;
+  const pct = (v - mn) / (mx - mn) * 100;
+  return lowerBetter ? 100 - pct : pct;
+}
+
+function medalOrRank(i) {
+  if (i === 0) return '<td class="medal">🥇</td>';
+  if (i === 1) return '<td class="medal">🥈</td>';
+  if (i === 2) return '<td class="medal">🥉</td>';
+  return `<td class="rank">${i+1}</td>`;
+}
+
+// ─── RENDER ──────────────────────────────────────────────────────────────────
+function render() {
+  const schema = SCHEMA[state.section];
+  const rawData = DATA[state.section];
+
+  // Filter
+  let data = rawData.filter(r => {
+    if (state.team !== 'All' && r.Team !== state.team) return false;
+    if (state.search) {
+      const q = state.search.toLowerCase();
+      const name = (r['First Name'] + ' ' + r['Last Name']).toLowerCase();
+      if (!name.includes(q) && !r.Team.toLowerCase().includes(q)) return false;
+    }
+    return true;
+  });
+
+  // Sort
+  const sortCol = schema.cols.find(c => c.key === state.sortKey) || schema.cols[2];
+  const lowerBetter = sortCol && sortCol.lowerBetter;
+  data.sort((a, b) => {
+    const av = a[state.sortKey], bv = b[state.sortKey];
+    if (av === null || av === undefined) return 1;
+    if (bv === null || bv === undefined) return -1;
+    // When best first: higher = rank 1 unless lowerBetter
+    const aWins = lowerBetter ? av < bv : av > bv;
+    if (state.sortDesc) return aWins ? -1 : 1;
+    else return aWins ? 1 : -1;
+  });
+
+  // Top N
+  let shown = data;
+  if (state.topN !== 'all') shown = data.slice(0, parseInt(state.topN));
+
+  // Precompute ranges for bar columns
+  const ranges = {};
+  schema.cols.forEach(col => {
+    if (col.bar) ranges[col.key] = colRange(data, col.key);
+  });
+
+  // Update sort select
+  const sortSel = document.getElementById('sortSel');
+  const prevSort = sortSel.value;
+  sortSel.innerHTML = schema.cols
+    .filter(c => c.type !== 'name' && c.type !== 'team')
+    .map(c => `<option value="${c.key}" ${state.sortKey===c.key?'selected':''}>${c.tip||c.label}</option>`)
+    .join('');
+  if (!sortSel.value) state.sortKey = schema.defaultSort;
+
+  // Header
+  const headRow = document.getElementById('headRow');
+  headRow.innerHTML = '<th style="width:36px"></th>' + schema.cols.map(col => {
+    const sorted = col.key === state.sortKey;
+    const arrow = sorted ? `<span class="sort-arr">${state.sortDesc ? '▼' : '▲'}</span>` : '';
+    return `<th class="${sorted?'sorted':''}" data-key="${col.key}" title="${col.tip||col.label}">${col.label}${arrow}</th>`;
+  }).join('');
+
+  // Body
+  const tbody = document.getElementById('bodyRows');
+  if (shown.length === 0) {
+    tbody.innerHTML = '';
+    document.getElementById('emptyMsg').style.display = '';
+    document.getElementById('countSpan').textContent = '0';
+    return;
+  }
+  document.getElementById('emptyMsg').style.display = 'none';
+
+  tbody.innerHTML = shown.map((row, i) => {
+    const cells = schema.cols.map(col => {
+      if (col.type === 'name') {
+        const dot = `<span class="dot" style="background:${TEAM_COLORS[row.Team]||'#4a7090'}"></span>`;
+        return `<td class="player-name">${dot}${row['First Name']} <span class="player-last">${row['Last Name']}</span></td>`;
+      }
+      if (col.type === 'team') {
+        return `<td class="team">${row.Team}</td>`;
+      }
+      const v = row[col.key];
+      if (v === null || v === undefined) return `<td class="num nil">—</td>`;
+
+      const fv = fmt(v, col.type);
+      const isTopStat = col.key === state.sortKey && i < 3;
+
+      if (col.bar && ranges[col.key]) {
+        const {mn, mx} = ranges[col.key];
+        const pct = barPct(v, mn, mx, col.lowerBetter);
+        const fillClass = col.lowerBetter ? (pct > 60 ? 'gold' : pct < 35 ? 'red' : '') : (pct > 65 ? 'gold' : '');
+        return `<td class="num ${isTopStat?'hi':''}">
+          <div class="bar-wrap">
+            <span class="bar-val">${fv}</span>
+            <div class="bar-track"><div class="bar-fill ${fillClass}" style="width:${pct}%"></div></div>
+          </div></td>`;
+      }
+      return `<td class="num ${isTopStat?'hi':''}">${fv}</td>`;
+    }).join('');
+
+    return `<tr>${medalOrRank(i)}${cells}</tr>`;
+  }).join('');
+
+  document.getElementById('countSpan').textContent = shown.length === data.length
+    ? data.length : `${shown.length} of ${data.length}`;
+}
+
+// ─── EVENTS ──────────────────────────────────────────────────────────────────
+function setSection(s) {
+  state.section = s;
+  state.sortKey = SCHEMA[s].defaultSort;
+  state.sortDesc = true;
+  // For pitching lower-better stats, default to ascending (best ERA shown first when desc)
+  document.querySelectorAll('.section-tab').forEach(t => t.classList.toggle('active', t.dataset.section===s));
+  document.getElementById('noteBar').innerHTML = SCHEMA[s].note;
+  render();
+}
+
+document.querySelectorAll('.section-tab').forEach(tab => {
+  tab.addEventListener('click', () => setSection(tab.dataset.section));
+});
+
+document.querySelectorAll('.team-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    state.team = btn.dataset.team;
+    document.querySelectorAll('.team-btn').forEach(b => b.classList.toggle('active', b===btn));
+    render();
+  });
+});
+
+document.getElementById('headRow').addEventListener('click', e => {
+  const th = e.target.closest('th[data-key]');
+  if (!th) return;
+  const key = th.dataset.key;
+  if (state.sortKey === key) state.sortDesc = !state.sortDesc;
+  else { state.sortKey = key; state.sortDesc = true; }
+  document.getElementById('sortSel').value = key;
+  render();
+});
+
+document.getElementById('sortSel').addEventListener('change', e => {
+  state.sortKey = e.target.value;
+  render();
+});
+
+document.getElementById('btnDesc').addEventListener('click', () => {
+  state.sortDesc = true;
+  document.getElementById('btnDesc').classList.add('active');
+  document.getElementById('btnAsc').classList.remove('active');
+  render();
+});
+document.getElementById('btnAsc').addEventListener('click', () => {
+  state.sortDesc = false;
+  document.getElementById('btnAsc').classList.add('active');
+  document.getElementById('btnDesc').classList.remove('active');
+  render();
+});
+
+document.querySelectorAll('.topn-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    state.topN = btn.dataset.n;
+    document.querySelectorAll('.topn-btn').forEach(b => b.classList.toggle('active', b===btn));
+    render();
+  });
+});
+
+let searchTimer;
+document.getElementById('searchBox').addEventListener('input', e => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => { state.search = e.target.value.trim(); render(); }, 200);
+});
+
+// Sync direction buttons when sort changes
+function syncDirBtns() {
+  document.getElementById('btnDesc').classList.toggle('active', state.sortDesc);
+  document.getElementById('btnAsc').classList.toggle('active', !state.sortDesc);
+}
+document.getElementById('headRow').addEventListener('click', syncDirBtns);
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+render();
+</script>
+</body>
+</html>
