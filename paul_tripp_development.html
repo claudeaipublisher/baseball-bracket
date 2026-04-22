@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Development Profile — Paul A & Tripp A</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#0f1f3d;--blue:#2253a8;--blue-light:#dce8fb;
+  --green:#1a6b3a;--green-light:#d6f0e0;
+  --amber:#8a5000;--amber-light:#fef3d0;
+  --red:#9b1c1c;--red-light:#fde8e8;
+  --gray:#4a5568;--gray-light:#f4f5f7;
+  --border:#dde2ea;--text:#1a202c;--text-muted:#64748b;--text-light:#94a3b8;
+  --white:#ffffff;--page-bg:#f0f3f8;
+  --paul:#1a4a8a;--paul-light:#dce8fb;
+  --tripp:#5b21b6;--tripp-light:#ede9fe;
+  --combined:#0f6b5a;--combined-light:#d6f0eb;
+}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--page-bg);color:var(--text);font-size:13px;line-height:1.5;padding:0;}
+.page{max-width:960px;margin:0 auto;padding:28px 24px;}
+.tab-nav{background:var(--navy);padding:0 24px;display:flex;align-items:flex-end;gap:4px;max-width:960px;margin:0 auto;}
+.tab-btn{padding:12px 22px;font-size:13px;font-weight:600;font-family:'IBM Plex Sans',sans-serif;border:none;cursor:pointer;border-radius:6px 6px 0 0;color:rgba(255,255,255,0.55);background:transparent;transition:background 0.15s;}
+.tab-btn:hover{color:rgba(255,255,255,0.9);background:rgba(255,255,255,0.08);}
+.tab-btn.active-paul{background:#2253a8;color:#fff;}
+.tab-btn.active-tripp{background:#5b21b6;color:#fff;}
+.tab-btn.active-combined{background:#0f6b5a;color:#fff;}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+
+.hdr{color:white;padding:22px 26px;border-radius:10px;margin-bottom:18px;display:flex;align-items:flex-start;justify-content:space-between;}
+.hdr-paul{background:var(--paul);}
+.hdr-tripp{background:var(--tripp);}
+.hdr-combined{background:linear-gradient(135deg,var(--paul) 0%,var(--tripp) 100%);}
+.hdr-title{font-size:19px;font-weight:600;margin-bottom:3px;}
+.hdr-sub{font-size:12px;color:rgba(255,255,255,0.6);}
+.hdr-meta{text-align:right;font-size:11px;color:rgba(255,255,255,0.5);}
+.hdr-meta strong{display:block;font-size:13px;color:rgba(255,255,255,0.85);margin-bottom:2px;}
+
+.info-box{border-radius:6px;padding:11px 15px;margin-bottom:14px;font-size:12px;line-height:1.65;}
+.info-paul{background:var(--paul-light);border-left:3px solid var(--paul);color:#1a3a7a;}
+.info-paul strong{color:#0f2d6b;}
+.info-tripp{background:var(--tripp-light);border-left:3px solid var(--tripp);color:#3b1591;}
+.info-tripp strong{color:#2e1065;}
+.info-combined{background:var(--combined-light);border-left:3px solid var(--combined);color:#0a4a3a;}
+.info-combined strong{color:#083a2e;}
+.caveat{background:var(--amber-light);border-left:3px solid #c97a00;border-radius:6px;padding:11px 15px;margin-bottom:16px;font-size:12px;color:var(--amber);line-height:1.6;}
+.caveat strong{display:block;color:#6b3d00;margin-bottom:2px;}
+
+.section-label{font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-light);margin-bottom:8px;}
+.divider{border:none;border-top:1px solid var(--border);margin:18px 0;}
+
+/* Score bar */
+.score-wrap{margin-bottom:10px;}
+.score-row{display:flex;justify-content:space-between;font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;}
+.score-track{height:8px;background:var(--gray-light);border-radius:4px;overflow:hidden;}
+
+/* Command bar — 4 metrics */
+.cmd-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;background:var(--gray-light);border-radius:8px;padding:8px;margin-bottom:10px;}
+.cmd-item{text-align:center;}
+.cmd-val{font-size:15px;font-weight:600;font-family:'IBM Plex Mono',monospace;}
+.cmd-lbl{font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-top:1px;}
+.cmd-wt{font-size:8px;color:var(--text-light);font-style:italic;margin-top:1px;}
+
+/* Stat minis */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px;}
+.stat-grid-6{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:10px;}
+.stat-mini{background:var(--gray-light);border-radius:6px;padding:6px 8px;text-align:center;}
+.stat-mini-val{font-size:14px;font-weight:600;color:var(--navy);font-family:'IBM Plex Mono',monospace;}
+.stat-mini-lbl{font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em;margin-top:2px;}
+
+/* Game log table */
+.data-table{width:100%;border-collapse:collapse;font-size:11.5px;margin-bottom:8px;}
+.data-table th{font-size:9.5px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;padding:6px;text-align:right;background:var(--gray-light);border-bottom:1px solid var(--border);}
+.data-table th:first-child,.data-table th:nth-child(2){text-align:left;}
+.data-table td{padding:6px;text-align:right;border-bottom:1px solid var(--border);background:var(--white);vertical-align:middle;}
+.data-table td:first-child,.data-table td:nth-child(2){text-align:left;font-weight:500;}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table tr:hover td{background:#f8faff;}
+.data-table tr.total-row td{font-weight:600;background:var(--gray-light);}
+.val-good{color:var(--green);font-weight:600;}
+.val-bad{color:var(--red);font-weight:600;}
+.val-mid{color:var(--amber);font-weight:600;}
+
+/* Analysis blurb */
+.blurb{font-size:12px;color:var(--text-muted);line-height:1.7;margin-bottom:10px;}
+.blurb p{margin-bottom:8px;}
+.blurb p:last-child{margin-bottom:0;}
+
+/* Trend table */
+.trend-table{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:12px;}
+.trend-table th{font-size:9px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;padding:5px 8px;text-align:center;background:var(--gray-light);border-bottom:1px solid var(--border);}
+.trend-table th:first-child{text-align:left;}
+.trend-table td{padding:5px 8px;text-align:center;border-bottom:1px solid var(--border);background:var(--white);font-family:'IBM Plex Mono',monospace;font-size:11px;}
+.trend-table td:first-child{text-align:left;font-family:'IBM Plex Sans',sans-serif;font-weight:500;font-size:11px;}
+.trend-table tr:last-child td{border-bottom:none;}
+
+/* Bottom line */
+.bottom-paul{background:var(--paul);color:rgba(255,255,255,0.8);border-radius:8px;padding:16px 20px;font-size:12.5px;line-height:1.7;}
+.bottom-paul strong{color:white;}
+.bottom-tripp{background:var(--tripp);color:rgba(255,255,255,0.8);border-radius:8px;padding:16px 20px;font-size:12.5px;line-height:1.7;}
+.bottom-tripp strong{color:white;}
+.bottom-combined{background:linear-gradient(135deg,var(--paul) 0%,var(--tripp) 100%);color:rgba(255,255,255,0.8);border-radius:8px;padding:16px 20px;font-size:12.5px;line-height:1.7;}
+.bottom-combined strong{color:white;}
+
+/* Comparison table on combined page */
+.compare-table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:16px;}
+.compare-table th{font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;padding:8px 10px;text-align:center;border-bottom:2px solid var(--border);}
+.compare-table th:first-child{text-align:left;background:var(--gray-light);}
+.compare-table th.paul-hdr{background:var(--paul-light);color:var(--paul);}
+.compare-table th.tripp-hdr{background:var(--tripp-light);color:var(--tripp);}
+.compare-table th.combined-hdr{background:var(--combined-light);color:var(--combined);}
+.compare-table td{padding:8px 10px;text-align:center;border-bottom:1px solid var(--border);font-family:'IBM Plex Mono',monospace;}
+.compare-table td:first-child{text-align:left;font-family:'IBM Plex Sans',sans-serif;font-weight:600;background:var(--gray-light);font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;}
+.compare-table tr:last-child td{border-bottom:none;}
+
+/* pill */
+.pill{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;}
+.pill-paul{background:var(--paul-light);color:var(--paul);}
+.pill-tripp{background:var(--tripp-light);color:var(--tripp);}
+.pill-combined{background:var(--combined-light);color:var(--combined);}
+.pill-amber{background:var(--amber-light);color:var(--amber);}
+
+/* metrics summary cards */
+.metrics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
+.metric-card{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:12px 14px;}
+.metric-val{font-size:22px;font-weight:600;font-family:'IBM Plex Mono',monospace;color:var(--navy);}
+.metric-lbl{font-size:11px;color:var(--text-muted);margin-bottom:3px;}
+.metric-sub{font-size:10px;color:var(--text-light);margin-top:2px;}
+.metric-sub.warn{color:var(--red);}
+.metric-sub.good{color:var(--green);}
+</style>
+</head>
+<body>
+
+<div class="tab-nav">
+  <button class="tab-btn active-paul" onclick="showTab('paul',this)">Paul A #13</button>
+  <button class="tab-btn" onclick="showTab('tripp',this)">Tripp A #3</button>
+  <button class="tab-btn" onclick="showTab('combined',this)">Combined Profile</button>
+</div>
+
+<!-- ==================== PAUL A ==================== -->
+<div id="tab-paul" class="tab-content active">
+<div class="page">
+  <div class="hdr hdr-paul">
+    <div>
+      <div class="hdr-title">Paul A &mdash; Development Profile</div>
+      <div class="hdr-sub">5 games &middot; Feb 21 &ndash; Apr 18 &middot; 9.1 IP &middot; WPBR MA Braves</div>
+    </div>
+    <div class="hdr-meta"><strong>#13</strong>WPBR MA Braves &middot; 12U</div>
+  </div>
+
+  <div class="info-box info-paul">
+    <strong>What this profile covers</strong>
+    Five appearances from Feb 21 through Apr 18 totaling 9.1 innings. Walk data confirmed manually by coaching staff. Pitch count and strike data extracted from GameChanger box scores. Weighted score uses Strike%&times;40 + K/BB&times;20 + WP/IP&times;20 + ERA&times;20.
+  </div>
+
+  <div class="section-label">Weighted command score</div>
+  <div class="score-wrap">
+    <div class="score-row"><span>Score: 34.2 / 100</span><span style="color:var(--text-light);">Str%&times;40 &nbsp; K/BB&times;20 &nbsp; WP/IP&times;20 &nbsp; ERA&times;20</span></div>
+    <div class="score-track"><div style="height:100%;width:34.2%;background:var(--paul);border-radius:4px;"></div></div>
+  </div>
+
+  <div class="section-label" style="margin-bottom:6px;">Four primary indicators</div>
+  <div class="cmd-bar">
+    <div class="cmd-item"><div class="cmd-val" style="color:var(--red);">50.0%</div><div class="cmd-lbl">Strike%</div><div class="cmd-wt">wt: 40</div></div>
+    <div class="cmd-item"><div class="cmd-val" style="color:var(--amber);">1.07</div><div class="cmd-lbl">K/BB</div><div class="cmd-wt">wt: 20</div></div>
+    <div class="cmd-item"><div class="cmd-val" style="color:var(--green);">0.54</div><div class="cmd-lbl">WP/IP</div><div class="cmd-wt">wt: 20</div></div>
+    <div class="cmd-item"><div class="cmd-val" style="color:var(--red);">14.46</div><div class="cmd-lbl">ERA</div><div class="cmd-wt">wt: 20</div></div>
+  </div>
+
+  <div class="section-label" style="margin-bottom:6px;">Supporting stats</div>
+  <div class="stat-grid-6">
+    <div class="stat-mini"><div class="stat-mini-val">9.1</div><div class="stat-mini-lbl">IP</div></div>
+    <div class="stat-mini"><div class="stat-mini-val">12</div><div class="stat-mini-lbl">Hits</div></div>
+    <div class="stat-mini"><div class="stat-mini-val">15</div><div class="stat-mini-lbl">Walks</div></div>
+    <div class="stat-mini"><div class="stat-mini-val">16</div><div class="stat-mini-lbl">SO</div></div>
+    <div class="stat-mini"><div class="stat-mini-val">5</div><div class="stat-mini-lbl">WP</div></div>
+    <div class="stat-mini"><div class="stat-mini-val">2.893</div><div class="stat-mini-lbl">WHIP</div></div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="section-label">Game-by-game log</div>
+  <table class="data-table">
+    <thead><tr>
+      <th style="width:12%;">Date</th><th style="width:22%;">Opponent</th><th>Result</th>
+      <th>IP</th><th>H</th><th>ER</th><th>BB</th><th>SO</th><th>WP</th>
+      <th>Pitches</th><th>Strike%</th><th>ERA</th><th>K/BB</th><th>WP/IP</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td>Feb 21</td><td>WPBR MA Rays</td><td>W 12&ndash;2</td>
+        <td>1.0</td><td>0</td><td>1</td><td>4</td><td>2</td><td>1</td>
+        <td>30</td>
+        <td class="val-bad">40.0%</td><td>9.00</td><td class="val-bad">0.50</td><td class="val-mid">1.00</td>
+      </tr>
+      <tr>
+        <td>Mar 10</td><td>WPBR MA Yankees</td><td>W 9&ndash;5</td>
+        <td>2.1</td><td>3</td><td>3</td><td>2</td><td>2</td><td>3</td>
+        <td>45</td>
+        <td class="val-mid">55.6%</td><td>11.57</td><td class="val-mid">1.00</td><td class="val-bad">1.29</td>
+      </tr>
+      <tr>
+        <td>Mar 31</td><td>WPBR MA Pirates</td><td>W 14&ndash;12</td>
+        <td>3.0</td><td>2</td><td>3</td><td>5</td><td>6</td><td>1</td>
+        <td>64</td>
+        <td class="val-bad">45.3%</td><td>9.00</td><td class="val-mid">1.20</td><td class="val-good">0.33</td>
+      </tr>
+      <tr>
+        <td>Apr 16</td><td>Mariners</td><td>W 11&ndash;5</td>
+        <td>1.0</td><td>2</td><td>1</td><td>1</td><td>2</td><td>0</td>
+        <td>22</td>
+        <td class="val-good">59.1%</td><td>9.00</td><td class="val-good">2.00</td><td class="val-good">0.00</td>
+      </tr>
+      <tr>
+        <td>Apr 18</td><td>Brew Crew</td><td>L 6&ndash;13</td>
+        <td>2.0</td><td>5</td><td>7</td><td>3</td><td>4</td><td>0</td>
+        <td>49</td>
+        <td class="val-mid">53.1%</td><td class="val-bad">31.50</td><td class="val-mid">1.33</td><td class="val-good">0.00</td>
+      </tr>
+      <tr class="total-row">
+        <td colspan="3">Season totals</td>
+        <td>9.1</td><td>12</td><td>15</td><td>15</td><td>16</td><td>5</td>
+        <td>210</td>
+        <td class="val-bad">50.0%</td><td class="val-bad">14.46</td><td class="val-mid">1.07</td><td class="val-good">0.54</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="divider"></div>
+  <div class="section-label">Trend by game</div>
+  <table class="trend-table">
+    <thead><tr>
+      <th>Metric</th><th>Feb 21</th><th>Mar 10</th><th>Mar 31</th><th>Apr 16</th><th>Apr 18</th><th>Direction</th>
+    </tr></thead>
+    <tbody>
+      <tr><td>Strike%</td>
+        <td class="val-bad">40.0%</td><td class="val-mid">55.6%</td><td class="val-bad">45.3%</td><td class="val-good">59.1%</td><td class="val-mid">53.1%</td>
+        <td style="font-family:var(--sans);font-size:11px;color:var(--amber);">Volatile</td>
+      </tr>
+      <tr><td>K/BB</td>
+        <td class="val-bad">0.50</td><td class="val-mid">1.00</td><td class="val-mid">1.20</td><td class="val-good">2.00</td><td class="val-mid">1.33</td>
+        <td style="font-family:var(--sans);font-size:11px;color:var(--green);">Improving</td>
+      </tr>
+      <tr><td>WP/IP</td>
+        <td class="val-mid">1.00</td><td class="val-bad">1.29</td><td class="val-good">0.33</td><td class="val-good">0.00</td><td class="val-good">0.00</td>
+        <td style="font-family:var(--sans);font-size:11px;color:var(--green);">Improving</td>
+      </tr>
+      <tr><td>ERA</td>
+        <td>9.00</td><td>11.57</td><td>9.00</td><td>9.00</td><td class="val-bad">31.50</td>
+        <td style="font-family:var(--sans);font-size:11px;color:var(--red);">No trend</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="divider"></div>
+  <div class="section-label">Scout analysis</div>
+  <div class="blurb">
+    <p><strong>The walk rate is the defining issue.</strong> 15 walks in 9.1 innings &mdash; 1.61 per inning &mdash; means Paul is putting the leadoff runner on base in nearly every inning he pitches. The Feb 21 outing is the starkest example: 4 walks in 1.0 inning with only 12 strikes out of 30 pitches, yet zero hits allowed. The offense did not need a single hit to score against him that day.</p>
+    <p><strong>Strike% of 50.0% is right at the floor of viability.</strong> He has not cleared 60% in any appearance. The variance is the other concern &mdash; swinging from 40.0% to 59.1% game to game tells you the delivery is not yet repeatable. When he is at 59.1% he looks like a different pitcher. That game (Apr 16) was also his cleanest across all four indicators: 1 BB, 0 WP, 2 K in 1.0 IP.</p>
+    <p><strong>The wild pitch problem appears to be resolving.</strong> Five WP across the first three games, zero in the last two. Back-to-back clean WP outings in Apr 16 and Apr 18 &mdash; including his worst ERA performance &mdash; suggests a mechanical adjustment may have been made. The WP improvement held even when everything else fell apart against Brew Crew.</p>
+    <p><strong>The strikeout arm is real and should not be overlooked.</strong> 16 K in 9.1 innings (1.72 per inning) gives him genuine upside. His best game was Mar 31 &mdash; 6 K in 3.0 IP &mdash; showing he can miss bats in volume when he is on. K/BB has also trended upward across the five games from 0.50 to a range of 1.20&ndash;2.00 in the three most recent outings. The Apr 18 blowup came from contact (5 H, 7 ER), not walks.</p>
+  </div>
+
+  <div class="bottom-paul">
+    <strong>Development focus &mdash;</strong> First-pitch strike rate is the single most important metric to track. Getting ahead in the count immediately reduces walk risk, reduces pitch count, and allows him to use his strikeout stuff in favorable counts rather than falling behind. The WP trend is encouraging and suggests he is coachable. The ceiling here is meaningful if the Strike% stabilizes above 55%.
+  </div>
+</div>
+</div>
+
+<!-- ==================== TRIPP A ==================== -->
+<div id="tab-tripp" class="tab-content">
+<div class="page">
+  <div class="hdr hdr-tripp">
+    <div>
+      <div class="hdr-title">Tripp A &mdash; Development Profile</div>
+      <div class="hdr-sub">3 games &middot; Mar 29 &ndash; Apr 12 &middot; 3.2 IP &middot; Under Dawgs 12U</div>
+    </div>
+    <div class="hdr-meta"><strong>#3</strong>Under Dawgs 12U &middot; 12U</div>
+  </div>
+
+  <div class="info-box info-tripp">
+    <strong>What this profile covers</strong>
+    Three appearances from Mar 29 through Apr 12 totaling 3.2 innings. Pitch count data not available for Tripp &mdash; Strike% of 53% derived from GameChanger box score data. Walk and wild pitch data confirmed from box scores. Weighted score uses Strike%&times;40 + K/BB&times;20 + WP/IP&times;20 + ERA&times;20.
+  </div>
+
+  <div class="caveat">
+    <strong>Sample size note</strong>
+    3.2 IP across 3 appearances is a limited dataset. Metrics are directionally meaningful but should not be treated as definitive. ERA of 4.91 in particular reflects a very small earned run sample. More appearances are needed before drawing firm conclusions.
+  </div>
+
+  <div class="section-label">Weighted command score</div>
+  <div class="score-wrap">
+    <div class="score-row"><span>Score: 43.1 / 100</span><span style="color:var(--text-light);">Str%&times;40 &nbsp; K/BB&times;20 &nbsp; WP/IP&times;20 &nbsp; ERA&times;20</span></div>
+    <div class="score-track"><div style="height:100%;width:43.1%;background:var(--tripp);border-radius:4px;"></div></div>
+  </div>
+
+  <div class="section-label" style="margin-bottom:6px;">Four primary indicators</div>
+  <div class="cmd-bar">
+    <div class="cmd-item"><div class="cmd-val" style="color:var(--amber);">53.0%</div><div class="cmd-lbl">Strike%</div><div class="cmd-wt">wt: 40</div></div>
+    <div class="cmd-item"><div class="cmd-val" style="color:var(--amber);">0.62</div><div class="cmd-lbl">K/BB</div><div class="cmd-wt">wt: 20</div></div>
+    <div class="cmd-item"><div class="cmd-val" style="color:var(--red);">1.36</div><div class="cmd-lbl">WP/IP</div><div class="cmd-wt">wt: 20</div></div>
+    <div class="cmd-item"><div class="cmd-val" style="color:var(--green);">4.91</div><div class="cmd-lbl">ERA</div><div class="cmd-wt">wt: 20</div></div>
+  </div>
+
+  <div class="section-label" style="margin-bottom:6px;">Supporting stats</div>
+  <div class="stat-grid">
+    <div class="stat-mini"><div class="stat-mini-val">3.2</div><div class="stat-mini-lbl">IP</div></div>
+    <div class="stat-mini"><div class="stat-mini-val">2</div><div class="stat-mini-lbl">Hits</div></div>
+    <div class="stat-mini"><div class="stat-mini-val">8</div><div class="stat-mini-lbl">Walks</div></div>
+    <div class="stat-mini"><div class="stat-mini-val">5</div><div class="stat-mini-lbl">SO</div></div>
+    <div class="stat-mini"><div class="stat-mini-val">5</div><div class="stat-mini-lbl">WP</div></div>
+    <div class="stat-mini"><div class="stat-mini-val">2.727</div><div class="stat-mini-lbl">WHIP</div></div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="section-label">Game-by-game log</div>
+  <table class="data-table">
+    <thead><tr>
+      <th style="width:12%;">Date</th><th style="width:24%;">Opponent</th><th>Result</th>
+      <th>IP</th><th>H</th><th>ER</th><th>BB</th><th>SO</th><th>WP</th>
+      <th>ERA</th><th>K/BB</th><th>WP/IP</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td>Mar 29</td><td>WVAC Nukes 12U</td><td>L 7&ndash;12</td>
+        <td>0.2</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+        <td class="val-good">0.00</td><td style="color:var(--text-light);">N/A</td><td class="val-good">0.00</td>
+      </tr>
+      <tr>
+        <td>Mar 29</td><td>ABA Cobra 12U</td><td>W 8&ndash;2</td>
+        <td>1.0</td><td>0</td><td>0</td><td>2</td><td>2</td><td>1</td>
+        <td class="val-good">0.00</td><td class="val-mid">1.00</td><td class="val-mid">1.00</td>
+      </tr>
+      <tr>
+        <td>Apr 12</td><td>STORM 12U</td><td>L 4&ndash;9</td>
+        <td>2.0</td><td>2</td><td>2</td><td>6</td><td>3</td><td>4</td>
+        <td class="val-bad">9.00</td><td class="val-bad">0.50</td><td class="val-bad">2.00</td>
+      </tr>
+      <tr class="total-row">
+        <td colspan="3">Season totals</td>
+        <td>3.2</td><td>2</td><td>2</td><td>8</td><td>5</td><td>5</td>
+        <td class="val-good">4.91</td><td class="val-bad">0.62</td><td class="val-bad">1.36</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="divider"></div>
+  <div class="section-label">Scout analysis</div>
+  <div class="blurb">
+    <p><strong>The STORM 12U outing is the defining data point.</strong> In 2.0 innings against a mid-upper tier opponent, Tripp issued 6 walks and threw 4 wild pitches. That is 10 free baserunner-advancement events in 6 outs &mdash; an average of more than one free gift per out recorded. The walk and WP problem does not show up against weak competition (0 BB, 0 WP in his 0.2 IP outing vs WVAC, clean WP in 1.0 IP vs bottom-tier ABA) but emerged in full force against his first genuine test.</p>
+    <p><strong>WP/IP of 1.36 is the most alarming single number in this profile.</strong> Five wild pitches in 3.2 innings means every runner who reaches base has an additional free advancement opportunity nearly every half-inning. At 12U where baserunners are aggressive, this directly translates to runs regardless of whether the defense is good.</p>
+    <p><strong>ERA of 4.91 is the most misleading number in this profile.</strong> Two earned runs in 3.2 innings looks like a success story until you see 8 walks and 5 wild pitches in the same sample. The damage coming from walks and wild pitches rather than hits is not a positive &mdash; it means the offense got to him for free rather than earning it. Against better competition that typically leads to a much worse ERA.</p>
+    <p><strong>The strikeout data shows genuine arm talent.</strong> 5 K in 3.2 IP, including 3 in his best outing (2.0 IP vs STORM). When Tripp is challenging hitters he can miss bats. The problem is the ratio of free baserunners to strikeouts. He has 8 walks and 5 wild pitches (13 free events) against 5 strikeouts. The giveback rate far exceeds the takeaway rate.</p>
+    <p><strong>Strike% of 53% is directional only</strong> given the limited pitch data available. It sits just below the 55% target and is consistent with a pitcher who is competitive but not yet in command of the strike zone.</p>
+  </div>
+
+  <div class="bottom-tripp">
+    <strong>Development focus &mdash;</strong> Wild pitches are the most urgent area because they are the most controllable through mechanical adjustment. If the release point or arm path is creating WP, that is a coachable fix. The walk rate is the deeper concern because it reflects count management and the ability to throw strikes under pressure. With 3.2 IP and only one game against quality opposition, the sample is too small to know how much of the STORM outing was circumstance versus persistent tendency. More outings against mid-tier or better opponents are needed.
+  </div>
+</div>
+</div>
+
+<!-- ==================== COMBINED ==================== -->
+<div id="tab-combined" class="tab-content">
+<div class="page">
+  <div class="hdr hdr-combined">
+    <div>
+      <div class="hdr-title">Combined Development Profile</div>
+      <div class="hdr-sub">Paul A + Tripp A &mdash; analyzed as a single pitcher &middot; 8 games &middot; 13.0 IP</div>
+    </div>
+    <div class="hdr-meta"><strong>Composite</strong>Click individual tabs for full breakdowns</div>
+  </div>
+
+  <div class="info-box info-combined">
+    <strong>How to read this page</strong>
+    This tab treats Paul A and Tripp A as if they were the same pitcher &mdash; pooling all appearances, all innings, and all counting stats into a single profile. The purpose is to identify shared tendencies, the combined command signature, and what a coaching plan would look like if both players were receiving the same development intervention. Individual profiles remain available on their respective tabs.
+  </div>
+
+  <div class="divider"></div>
+  <div class="section-label">Side-by-side comparison</div>
+  <table class="compare-table">
+    <thead><tr>
+      <th>Metric</th>
+      <th class="paul-hdr">Paul A #13</th>
+      <th class="tripp-hdr">Tripp A #3</th>
+      <th class="combined-hdr">Combined</th>
+    </tr></thead>
+    <tbody>
+      <tr><td>IP</td><td>9.1</td><td>3.2</td><td>13.0</td></tr>
+      <tr><td>Games</td><td>5</td><td>3</td><td>8</td></tr>
+      <tr><td>Strike%</td>
+        <td class="val-bad">50.0%</td>
+        <td class="val-mid">53.0%</td>
+        <td class="val-bad">50.8%</td>
+      </tr>
+      <tr><td>K/BB</td>
+        <td class="val-mid">1.07</td>
+        <td class="val-bad">0.62</td>
+        <td class="val-mid">0.91</td>
+      </tr>
+      <tr><td>WP/IP</td>
+        <td class="val-good">0.54</td>
+        <td class="val-bad">1.36</td>
+        <td class="val-mid">0.77</td>
+      </tr>
+      <tr><td>ERA</td>
+        <td class="val-bad">14.46</td>
+        <td class="val-good">4.91</td>
+        <td class="val-bad">11.77</td>
+      </tr>
+      <tr><td>BB total</td><td>15</td><td>8</td><td>23</td></tr>
+      <tr><td>SO total</td><td>16</td><td>5</td><td>21</td></tr>
+      <tr><td>WP total</td><td>5</td><td>5</td><td>10</td></tr>
+      <tr><td>WHIP</td><td>2.893</td><td>2.727</td><td>2.846</td></tr>
+    </tbody>
+  </table>
+
+  <div class="divider"></div>
+  <div class="section-label">Combined weighted score</div>
+  <div class="score-wrap">
+    <div class="score-row"><span>Combined Score: 28.9 / 100</span><span style="color:var(--text-light);">Str%&times;40 &nbsp; K/BB&times;20 &nbsp; WP/IP&times;20 &nbsp; ERA&times;20</span></div>
+    <div class="score-track"><div style="height:100%;width:28.9%;background:linear-gradient(90deg,var(--paul),var(--tripp));border-radius:4px;"></div></div>
+  </div>
+  <div style="font-size:11px;color:var(--text-light);margin-bottom:16px;">Score calculated using combined totals against same peer group as the full scouting report. Note: combined Strike% is IP-weighted at 50.8% since Tripp's pitch count data is unavailable.</div>
+
+  <div class="section-label" style="margin-bottom:6px;">Combined command indicators</div>
+  <div class="cmd-bar">
+    <div class="cmd-item"><div class="cmd-val" style="color:var(--red);">50.8%</div><div class="cmd-lbl">Strike%</div><div class="cmd-wt">wt: 40</div></div>
+    <div class="cmd-item"><div class="cmd-val" style="color:var(--amber);">0.91</div><div class="cmd-lbl">K/BB</div><div class="cmd-wt">wt: 20</div></div>
+    <div class="cmd-item"><div class="cmd-val" style="color:var(--amber);">0.77</div><div class="cmd-lbl">WP/IP</div><div class="cmd-wt">wt: 20</div></div>
+    <div class="cmd-item"><div class="cmd-val" style="color:var(--red);">11.77</div><div class="cmd-lbl">ERA</div><div class="cmd-wt">wt: 20</div></div>
+  </div>
+
+  <div class="section-label" style="margin-bottom:6px;">Combined counting stats</div>
+  <div class="metrics-grid">
+    <div class="metric-card"><div class="metric-lbl">Total innings pitched</div><div class="metric-val">13.0</div><div class="metric-sub">8 appearances</div></div>
+    <div class="metric-card"><div class="metric-lbl">Total walks issued</div><div class="metric-val">23</div><div class="metric-sub warn">1.77 per inning</div></div>
+    <div class="metric-card"><div class="metric-lbl">Total wild pitches</div><div class="metric-val">10</div><div class="metric-sub warn">0.77 per inning</div></div>
+    <div class="metric-card"><div class="metric-lbl">Total strikeouts</div><div class="metric-val">21</div><div class="metric-sub good">1.62 per inning</div></div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="section-label">Combined analysis</div>
+  <div class="blurb">
+    <p><strong>The shared command signature is unmistakable.</strong> Treat these two as the same pitcher and what you get is a player who throws strikes at a 50.8% rate, walks more batters than he strikes out (23 BB vs 21 SO), and contributes 10 wild pitches across 13.0 innings. The K/BB of 0.91 just below 1.0 tells the clearest story &mdash; for every strikeout recorded, there is nearly one walk issued. The offense is getting free baserunners at almost the same rate the pitcher is getting outs through his best weapon.</p>
+    <p><strong>The combined profile is a walk-and-wild-pitch machine.</strong> 23 walks plus 10 wild pitches across 13.0 innings means the combined pitcher produces 33 free baserunner-advancement events in 39 outs recorded. That is 0.85 free events per out &mdash; nearly one free gift for every out they get. At 12U, where baserunners score at a high rate regardless of the quality of the hit, this is an unsustainable profile against competitive opposition.</p>
+    <p><strong>Where they differ matters for coaching.</strong> Paul&rsquo;s WP/IP has improved to 0.00 over his last two games while Tripp&rsquo;s WP problem was concentrated against his toughest opponent. Paul&rsquo;s K/BB is trending upward (0.50 early, 1.20&ndash;2.00 recently). Tripp&rsquo;s ERA looks better because he has faced fewer quality opponents and allowed less contact. These are different expression points of the same underlying issue: command under pressure.</p>
+    <p><strong>The strikeout rate is the shared positive.</strong> 21 strikeouts across 13.0 innings (1.62 K/IP) confirms that both pitchers have enough on the ball to miss bats when they are in the zone. This is the foundation that makes the command work worth doing. A pitcher who cannot miss bats at all has a lower ceiling. Both of these pitchers have a meaningful ceiling if they can elevate Strike% into the 57&ndash;62% range consistently.</p>
+    <p><strong>The combined ERA of 11.77 is the output of everything above.</strong> It is not driven by contact &mdash; combined WHIP with hits only (ignoring walks) would look much better. The runs are coming from free baserunners who then score, either on contact or on additional wild pitches. Fix the command, the ERA follows.</p>
+  </div>
+
+  <div class="section-label">What a shared development plan looks like</div>
+  <div class="blurb">
+    <p><strong>Priority 1 &mdash; First pitch strikes.</strong> Both pitchers need a singular focus on getting ahead 0-1 rather than falling behind 1-0. First pitch strike percentage drives everything downstream: fewer pitches per batter, fewer walks, more strikeouts in favorable counts, and lower pitch counts that allow longer outings. Every bullpen session should track first pitch strikes as the primary metric.</p>
+    <p><strong>Priority 2 &mdash; Eliminate the walk-then-wild-pitch sequence.</strong> The most damaging pattern in both profiles is walk followed by wild pitch &mdash; a free baserunner immediately advanced one base at no cost. This combination scores runs without requiring a single hit. Mechanical consistency in the delivery is the root fix.</p>
+    <p><strong>Priority 3 &mdash; Low-leverage deployment until Strike% stabilizes.</strong> Neither pitcher should be used in close games or high-leverage situations until Strike% is consistently above 55% across at least three consecutive outings. Track the metric game by game and use it as the objective threshold for increased responsibility, not feel or outcome.</p>
+  </div>
+
+  <div class="bottom-combined">
+    <strong>Combined bottom line &mdash;</strong> Two pitchers, one command profile. The shared problem is walks and wild pitches at a rate that creates free runs before the defense gets involved. The shared asset is a strikeout rate that proves the arm is there. <strong>Paul A</strong> shows more recent improvement in WP/IP and K/BB trend. <strong>Tripp A</strong> has a limited sample that makes him harder to evaluate but the STORM outing was a significant red flag against competitive opposition. Individually or combined, the development path is the same: first pitch strikes, mechanical consistency, and patient deployment in low-leverage situations while the work progresses.
+  </div>
+</div>
+</div>
+
+<script>
+var tabMap={'paul':0,'tripp':1,'combined':2};
+var classMap={'paul':'active-paul','tripp':'active-tripp','combined':'active-combined'};
+function showTab(tab,btn){
+  document.querySelectorAll('.tab-content').forEach(function(el){el.classList.remove('active');});
+  document.querySelectorAll('.tab-btn').forEach(function(el){el.className='tab-btn';});
+  document.getElementById('tab-'+tab).classList.add('active');
+  btn.classList.add(classMap[tab]);
+}
+</script>
+</body>
+</html>
