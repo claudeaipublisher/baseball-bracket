@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0f172a">
+<title>Altamonte Scouting</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { overscroll-behavior-y: none; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #f1f5f9;
+    color: #0f172a;
+    font-size: 16px;
+    line-height: 1.4;
+    padding-bottom: 80px;
+  }
+  /* HEADER */
+  .top {
+    position: sticky; top: 0; z-index: 50;
+    background: #0f172a; color: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  .title-bar {
+    padding: 10px 14px 8px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .title { font-size: 13px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; opacity: 0.85; }
+  .tabs { display: flex; gap: 4px; }
+  .tab {
+    font-size: 12px; font-weight: 700; padding: 6px 10px;
+    background: rgba(255,255,255,0.1); color: white; border: 0; border-radius: 4px;
+    cursor: pointer; letter-spacing: 0.5px;
+  }
+  .tab.active { background: #f59e0b; color: #0f172a; }
+  /* LINEUP STRIP */
+  .lineup {
+    display: grid; gap: 4px;
+    padding: 6px 10px 10px;
+    grid-template-columns: repeat(9, 1fr);
+  }
+  .lineup.subs-mode { grid-template-columns: repeat(3, 1fr); padding: 6px 80px 10px; }
+  .slot {
+    background: #334155; color: white; border: 0;
+    aspect-ratio: 1;
+    min-height: 48px;
+    padding: 6px 2px;
+    border-radius: 6px;
+    font-weight: 800; font-size: 18px;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.1s;
+  }
+  .slot:active { transform: scale(0.95); }
+  .slot.active { background: #f59e0b; color: #0f172a; box-shadow: 0 0 0 3px #fbbf24; }
+  .slot .num { display: block; font-size: 10px; opacity: 0.65; font-weight: 600; margin-top: -2px; }
+  /* CARD */
+  .card {
+    background: white;
+    margin: 12px;
+    border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    overflow: hidden;
+  }
+  .card-head {
+    background: linear-gradient(180deg, #1e293b 0%, #334155 100%);
+    color: white;
+    padding: 14px 16px;
+    position: relative;
+  }
+  .player-number {
+    font-size: 56px; font-weight: 900; line-height: 1;
+    display: inline-block; vertical-align: middle;
+    margin-right: 12px;
+    letter-spacing: -2px;
+  }
+  .player-meta { display: inline-block; vertical-align: middle; }
+  .player-name { font-size: 20px; font-weight: 800; line-height: 1.1; }
+  .player-role { font-size: 13px; opacity: 0.75; font-weight: 600; letter-spacing: 0.5px; margin-top: 2px; }
+  .tags { margin-top: 10px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .tag {
+    font-size: 11px; font-weight: 800; padding: 4px 8px;
+    border-radius: 4px; letter-spacing: 0.5px; text-transform: uppercase;
+  }
+  .tag.power { background: #fbbf24; color: #0f172a; }
+  .tag.bunt { background: #f97316; color: white; }
+  .tag.k { background: #475569; color: white; }
+  .tag.runner { background: #06b6d4; color: white; }
+  .tag.patient { background: #10b981; color: white; }
+  /* STATS BAR */
+  .stats {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .stat {
+    padding: 10px 6px;
+    text-align: center;
+    border-right: 1px solid #e2e8f0;
+  }
+  .stat:last-child { border-right: 0; }
+  .stat-label { font-size: 10px; font-weight: 700; color: #64748b; letter-spacing: 0.5px; text-transform: uppercase; }
+  .stat-value { font-size: 22px; font-weight: 900; color: #0f172a; line-height: 1.1; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  /* SUMMARY */
+  .summary {
+    padding: 12px 16px;
+    background: #fef3c7;
+    border-bottom: 1px solid #fde68a;
+    font-size: 15px;
+    font-weight: 600;
+    color: #78350f;
+  }
+  /* SPRAY CHART */
+  .chart-section {
+    padding: 12px 12px 8px;
+  }
+  .section-label {
+    font-size: 11px; font-weight: 800;
+    color: #475569; letter-spacing: 1px; text-transform: uppercase;
+    margin-bottom: 6px; padding: 0 4px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .chart-wrap {
+    width: 100%;
+    aspect-ratio: 1 / 1.05;
+    background: #f0fdf4;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #d1fae5;
+  }
+  .chart-wrap svg { width: 100%; height: 100%; display: block; }
+  /* LEGEND */
+  .legend {
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: 6px 12px;
+    padding: 10px 12px;
+    font-size: 12px;
+    color: #334155;
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .swatch { display: inline-block; width: 12px; height: 12px; flex-shrink: 0; }
+  .swatch.circle { border-radius: 50%; }
+  .swatch.triangle { width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom-style: solid; border-bottom-width: 12px; }
+  .swatch.diamond { transform: rotate(45deg); }
+  .swatch.x-mark { position: relative; }
+  .swatch.x-mark::before, .swatch.x-mark::after {
+    content: ''; position: absolute; left: 50%; top: 0;
+    width: 2px; height: 100%; background: currentColor;
+  }
+  .swatch.x-mark::before { transform: translateX(-50%) rotate(45deg); }
+  .swatch.x-mark::after { transform: translateX(-50%) rotate(-45deg); }
+  /* TENDENCIES */
+  .tendencies {
+    padding: 10px 16px 14px;
+    border-top: 1px solid #e2e8f0;
+  }
+  .tendencies ul { list-style: none; padding: 0; margin: 0; }
+  .tendencies li {
+    padding: 6px 0 6px 18px;
+    position: relative;
+    font-size: 15px;
+    color: #1e293b;
+    line-height: 1.4;
+  }
+  .tendencies li::before {
+    content: '▸'; position: absolute; left: 0; top: 5px;
+    color: #f59e0b; font-weight: 900;
+  }
+  /* COLLAPSIBLE */
+  .collapse-trigger {
+    width: 100%; padding: 14px 16px;
+    background: white; border: 0; border-top: 1px solid #e2e8f0;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 13px; font-weight: 800;
+    color: #475569; letter-spacing: 1px; text-transform: uppercase;
+    cursor: pointer; text-align: left;
+  }
+  .collapse-trigger::after {
+    content: '▼'; font-size: 10px; transition: transform 0.2s;
+  }
+  .collapse-trigger.open::after { transform: rotate(180deg); }
+  .collapse-content {
+    display: none;
+    padding: 4px 16px 16px;
+    border-top: 1px solid #e2e8f0;
+  }
+  .collapse-content.open { display: block; }
+  .ab-row {
+    padding: 8px 10px;
+    margin-top: 6px;
+    background: #f8fafc;
+    border-left: 3px solid #cbd5e1;
+    border-radius: 4px;
+    font-size: 14px;
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;
+  }
+  .ab-row.hit { border-left-color: #16a34a; background: #f0fdf4; }
+  .ab-row.out { border-left-color: #dc2626; background: #fef2f2; }
+  .ab-row.bunt { border-left-color: #ea580c; background: #fff7ed; }
+  .ab-row.k { border-left-color: #64748b; }
+  .ab-row.bb { border-left-color: #06b6d4; background: #ecfeff; }
+  .ab-row.today { box-shadow: 0 0 0 2px #0ea5e9; }
+  .ab-game { font-size: 10px; font-weight: 800; color: #64748b; padding: 2px 6px; background: white; border-radius: 3px; flex-shrink: 0; }
+  .ab-game.today { background: #0ea5e9; color: white; }
+  /* TRACKER */
+  .tracker-bar {
+    padding: 12px 16px;
+    border-top: 1px solid #e2e8f0;
+    background: #fafafa;
+  }
+  .tracker-summary {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 10px;
+    font-size: 13px;
+    color: #64748b;
+    font-weight: 600;
+  }
+  .log-btn {
+    width: 100%;
+    background: #0f172a; color: white;
+    border: 0; border-radius: 8px;
+    padding: 14px;
+    font-size: 15px; font-weight: 800;
+    letter-spacing: 0.5px; text-transform: uppercase;
+    cursor: pointer;
+  }
+  .log-btn:active { background: #1e293b; }
+  /* MODAL */
+  .modal-bg {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(15, 23, 42, 0.7);
+    z-index: 100;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .modal-bg.open { display: flex; }
+  .modal {
+    background: white;
+    width: 100%;
+    max-width: 500px;
+    border-radius: 16px 16px 0 0;
+    padding: 20px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .modal-title { font-size: 17px; font-weight: 800; margin-bottom: 4px; }
+  .modal-sub { font-size: 13px; color: #64748b; margin-bottom: 16px; }
+  .modal-section { margin-bottom: 16px; }
+  .modal-section-label { font-size: 11px; font-weight: 800; color: #475569; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+  .btn-grid {
+    display: grid;
+    gap: 8px;
+  }
+  .btn-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .btn-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .opt-btn {
+    background: #f1f5f9; color: #0f172a;
+    border: 2px solid transparent; border-radius: 8px;
+    padding: 14px 10px;
+    font-size: 14px; font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+  }
+  .opt-btn.selected { background: #fef3c7; border-color: #f59e0b; }
+  .opt-btn.hit { background: #f0fdf4; color: #15803d; }
+  .opt-btn.hit.selected { background: #bbf7d0; border-color: #16a34a; }
+  .opt-btn.out { background: #fef2f2; color: #b91c1c; }
+  .opt-btn.out.selected { background: #fecaca; border-color: #dc2626; }
+  .opt-btn.k { background: #f1f5f9; color: #475569; }
+  .opt-btn.k.selected { background: #e2e8f0; border-color: #64748b; }
+  .opt-btn.bb { background: #ecfeff; color: #0e7490; }
+  .opt-btn.bb.selected { background: #cffafe; border-color: #06b6d4; }
+  .opt-btn.bunt { background: #fff7ed; color: #c2410c; }
+  .opt-btn.bunt.selected { background: #fed7aa; border-color: #ea580c; }
+  .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+  .modal-actions button { flex: 1; padding: 14px; border: 0; border-radius: 8px; font-size: 15px; font-weight: 800; cursor: pointer; letter-spacing: 0.5px; }
+  .btn-cancel { background: #f1f5f9; color: #475569; }
+  .btn-save { background: #0f172a; color: white; }
+  .btn-save:disabled { background: #cbd5e1; cursor: not-allowed; }
+  /* BOTTOM NAV */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: white;
+    border-top: 1px solid #e2e8f0;
+    padding: 10px 12px;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    z-index: 40;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
+  }
+  .nav-btn {
+    background: #f1f5f9; color: #0f172a;
+    border: 0; border-radius: 8px;
+    padding: 14px;
+    font-size: 15px; font-weight: 800;
+    cursor: pointer; letter-spacing: 0.5px;
+  }
+  .nav-btn:active { background: #e2e8f0; }
+  .nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  /* RESET CONTROL */
+  .reset-game {
+    text-align: center; padding: 16px;
+    font-size: 12px; color: #94a3b8;
+  }
+  .reset-game button {
+    background: transparent; border: 1px solid #cbd5e1;
+    color: #64748b; padding: 6px 12px; font-size: 12px;
+    border-radius: 4px; cursor: pointer; font-weight: 600;
+  }
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="title-bar">
+    <div class="title">Altamonte Scouting</div>
+    <div class="tabs">
+      <button class="tab active" id="tab-starters" onclick="setMode('starters')">STARTERS</button>
+      <button class="tab" id="tab-subs" onclick="setMode('subs')">SUBS</button>
+    </div>
+  </div>
+  <div class="lineup" id="lineup"></div>
+</div>
+
+<div class="card" id="card"></div>
+
+<div class="reset-game">
+  <button onclick="resetGame()">Clear today's at-bats</button>
+</div>
+
+<div class="bottom-nav">
+  <button class="nav-btn" id="prev-btn" onclick="nav(-1)">← PREV</button>
+  <button class="nav-btn" id="next-btn" onclick="nav(1)">NEXT →</button>
+</div>
+
+<div class="modal-bg" id="modal" onclick="closeModalIfBg(event)">
+  <div class="modal">
+    <div class="modal-title" id="modal-title">Log At-Bat</div>
+    <div class="modal-sub" id="modal-sub"></div>
+
+    <div class="modal-section">
+      <div class="modal-section-label">Outcome</div>
+      <div class="btn-grid cols-3" id="outcome-grid">
+        <button class="opt-btn hit" data-outcome="HIT">HIT</button>
+        <button class="opt-btn out" data-outcome="OUT">OUT</button>
+        <button class="opt-btn bunt" data-outcome="BUNT">BUNT</button>
+        <button class="opt-btn k" data-outcome="K">K</button>
+        <button class="opt-btn bb" data-outcome="BB">WALK</button>
+        <button class="opt-btn" data-outcome="HBP">HBP</button>
+      </div>
+    </div>
+
+    <div class="modal-section" id="contact-section" style="display:none;">
+      <div class="modal-section-label">Contact Type</div>
+      <div class="btn-grid cols-3" id="contact-grid">
+        <button class="opt-btn" data-contact="GB">GROUND</button>
+        <button class="opt-btn" data-contact="LD">LINE DRIVE</button>
+        <button class="opt-btn" data-contact="FB">FLY/POP</button>
+      </div>
+    </div>
+
+    <div class="modal-section" id="bunt-result-section" style="display:none;">
+      <div class="modal-section-label">Bunt Result</div>
+      <div class="btn-grid cols-2" id="bunt-result-grid">
+        <button class="opt-btn hit" data-buntresult="SAFE">SAFE (HIT)</button>
+        <button class="opt-btn out" data-buntresult="OUT">OUT</button>
+      </div>
+    </div>
+
+    <div class="modal-section" id="location-section" style="display:none;">
+      <div class="modal-section-label">Location</div>
+      <div class="btn-grid cols-3" id="location-grid">
+        <button class="opt-btn" data-loc="LF">LF</button>
+        <button class="opt-btn" data-loc="CF">CF</button>
+        <button class="opt-btn" data-loc="RF">RF</button>
+        <button class="opt-btn" data-loc="3B">3B</button>
+        <button class="opt-btn" data-loc="SS">SS</button>
+        <button class="opt-btn" data-loc="2B">2B</button>
+        <button class="opt-btn" data-loc="1B">1B</button>
+        <button class="opt-btn" data-loc="P">P</button>
+        <button class="opt-btn" data-loc="C">C/Foul</button>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" id="save-btn" onclick="saveAB()" disabled>Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// =================== DATA ===================
+// Coordinates use a 400x440 SVG canvas (catcher's view)
+// Home plate is at (200, 400), field opens up toward (200, 50)
+const FIELD = {
+  HOME: [200, 400], BEHIND_HOME: [200, 425],
+  FIRST_BASE: [305, 295], SECOND_BASE: [200, 195], THIRD_BASE: [95, 295],
+  PITCHER: [200, 305], SS: [155, 250], BETWEEN_FIRST_SECOND: [255, 245],
+  SHALLOW_LF: [110, 175], DEEP_LF: [70, 110],
+  SHALLOW_CF: [200, 155], DEEP_CF: [200, 85],
+  SHALLOW_RF: [290, 175], DEEP_RF: [330, 110],
+  BUNT_3B: [165, 365], BUNT_P: [200, 360], BUNT_1B: [235, 365]
+};
+
+// Helper: small random offset to avoid stacking
+function nudge(coord, idx) {
+  const offsets = [[0,0], [6,-4], [-5,3], [3,6], [-4,-5], [7,2], [-7,-3]];
+  const o = offsets[idx % offsets.length];
+  return [coord[0] + o[0], coord[1] + o[1]];
+}
+
+const PLAYERS = {
+  starters: [
+    {
+      id: 'derrickV', pos: 1, number: 3, name: 'Derrick V', role: 'P / CF',
+      stats: { ab: 5, h: 1, bb: 0, k: 1 },
+      tags: [],
+      summary: 'Right side / Center · Mostly ground balls',
+      details: [
+        'CF when he makes solid contact',
+        'Right side infield when jammed',
+        'Weak contact in both games against quality pitching'
+      ],
+      atBats: [
+        { g: 'EO', outcome: 'K', desc: 'K looking', xy: FIELD.HOME },
+        { g: 'EO', outcome: 'OUT', contact: 'GB', desc: 'Ground out to 2B', xy: nudge(FIELD.BETWEEN_FIRST_SECOND, 0) },
+        { g: 'EO', outcome: 'HIT', contact: 'LD', desc: 'Line drive single to CF', xy: FIELD.DEEP_CF },
+        { g: 'BCD', outcome: 'OUT', contact: 'FB', desc: 'Weak pop fly to 2B', xy: [205, 215] },
+        { g: 'BCD', outcome: 'OUT', contact: 'GB', desc: 'Ground out to 1B', xy: [285, 290] }
+      ]
+    },
+    {
+      id: 'haydenR', pos: 2, number: 44, name: 'Hayden R', role: '2B',
+      stats: { ab: 4, h: 0, bb: 0, k: 0 },
+      tags: [],
+      summary: 'Right side / Middle IF · 100% ground balls',
+      details: [
+        'Pure ground ball hitter',
+        'Never elevates the ball',
+        'Pull side / right side of infield'
+      ],
+      atBats: [
+        { g: 'EO', outcome: 'OUT', contact: 'GB', desc: 'Ground out to 2B', xy: nudge(FIELD.BETWEEN_FIRST_SECOND, 0) },
+        { g: 'EO', outcome: 'OUT', contact: 'GB', desc: 'Ground out to 2B', xy: nudge(FIELD.BETWEEN_FIRST_SECOND, 1) },
+        { g: 'BCD', outcome: 'OUT', contact: 'GB', desc: 'Ground out to 3B', xy: nudge(FIELD.THIRD_BASE, 0) },
+        { g: 'BCD', outcome: 'OUT', contact: 'GB', desc: 'Ground out to P', xy: nudge(FIELD.PITCHER, 0) }
+      ]
+    },
+    {
+      id: 'julianD', pos: 3, number: 5, name: 'Julian D', role: 'SS / P',
+      stats: { ab: 5, h: 0, bb: 0, k: 1 },
+      tags: [],
+      summary: 'Center / Middle · Barrels balls to CF even when jammed',
+      details: [
+        'Best pure hitter on team',
+        'Always finds the middle of the field',
+        'Will line out to CF rather than weak grounders'
+      ],
+      atBats: [
+        { g: 'EO', outcome: 'OUT', contact: 'FB', desc: 'Fly out to CF', xy: FIELD.SHALLOW_CF },
+        { g: 'EO', outcome: 'OUT', contact: 'GB', desc: 'Ground out to 2B', xy: nudge(FIELD.BETWEEN_FIRST_SECOND, 2) },
+        { g: 'BCD', outcome: 'OUT', contact: 'GB', desc: 'Ground out to 2B', xy: nudge(FIELD.BETWEEN_FIRST_SECOND, 3) },
+        { g: 'BCD', outcome: 'OUT', contact: 'LD', desc: 'Line out to CF', xy: [200, 130] },
+        { g: 'BCD', outcome: 'K', desc: 'K looking', xy: FIELD.HOME }
+      ]
+    },
+    {
+      id: 'christianZ', pos: 4, number: 13, name: 'Christian Z', role: '3B',
+      stats: { ab: 4, h: 2, bb: 0, k: 0 },
+      tags: ['power'],
+      summary: 'Pulls LF when on time · Oppo RF when late · ONLY POWER THREAT',
+      details: [
+        'Only XBH threat in lineup (1 double)',
+        'Pulls to LF/3B when on time',
+        'Goes oppo to RF when late on velocity',
+        'Jam him inside or get him chasing breaking balls'
+      ],
+      atBats: [
+        { g: 'EO', outcome: 'HIT', contact: 'LD', desc: '2B (line drive double to RF)', xy: FIELD.DEEP_RF },
+        { g: 'EO', outcome: 'OUT', contact: 'GB', desc: 'Ground out to SS', xy: nudge(FIELD.SS, 0) },
+        { g: 'BCD', outcome: 'OUT', contact: 'FB', desc: 'Foul fly out to C', xy: FIELD.BEHIND_HOME },
+        { g: 'BCD', outcome: 'HIT', contact: 'GB', desc: 'Single (hard grounder) to 3B', xy: nudge(FIELD.THIRD_BASE, 1) }
+      ]
+    },
+    {
+      id: 'diegoT', pos: 5, number: 7, name: 'Diego T', role: '1B',
+      stats: { ab: 4, h: 0, bb: 0, k: 0 },
+      tags: [],
+      summary: 'Spreads infield (mostly left) · Weak contact',
+      details: [
+        'Hits ball where pitched but weak contact',
+        'No outfield production against quality pitching',
+        'Mix of pop ups and ground balls'
+      ],
+      atBats: [
+        { g: 'EO', outcome: 'OUT', contact: 'FB', desc: 'Pop out to CF', xy: [210, 155] },
+        { g: 'EO', outcome: 'OUT', contact: 'GB', desc: 'Ground out to SS', xy: nudge(FIELD.SS, 1) },
+        { g: 'BCD', outcome: 'OUT', contact: 'GB', desc: 'Ground out to 2B', xy: nudge(FIELD.BETWEEN_FIRST_SECOND, 4) },
+        { g: 'BCD', outcome: 'OUT', contact: 'LD', desc: 'Line out to SS', xy: nudge(FIELD.SS, 2) }
+      ]
+    },
+    {
+      id: 'deanV', pos: 6, number: 1, name: 'Dean V', role: '1B / P',
+      stats: { ab: 4, h: 0, bb: 0, k: 2 },
+      tags: ['k'],
+      summary: 'Right side / Middle · Strikeout candidate',
+      details: [
+        '2 of 4 ABs were strikeouts',
+        'Weak contact when he puts it in play',
+        'Right side / middle of infield'
+      ],
+      atBats: [
+        { g: 'EO', outcome: 'K', desc: 'K looking', xy: FIELD.HOME },
+        { g: 'EO', outcome: 'OUT', contact: 'GB', desc: 'Ground out to 2B', xy: nudge(FIELD.BETWEEN_FIRST_SECOND, 5) },
+        { g: 'BCD', outcome: 'K', desc: 'K swinging', xy: FIELD.HOME },
+        { g: 'BCD', outcome: 'OUT', contact: 'GB', desc: 'Ground out to P', xy: nudge(FIELD.PITCHER, 1) }
+      ]
+    },
+    {
+      id: 'chaseD', pos: 7, number: 17, name: 'Chase D', role: 'C',
+      stats: { ab: 3, h: 1, bb: 1, k: 0 },
+      tags: [],
+      summary: 'Left side IF / CF on contact · Sleeper bat',
+      details: [
+        'Can drive ball to CF (line drive single)',
+        'Otherwise pull-side grounders',
+        'Don\u2019t sleep on him in late counts'
+      ],
+      atBats: [
+        { g: 'EO', outcome: 'OUT', contact: 'GB', desc: 'Ground out to SS', xy: nudge(FIELD.SS, 3) },
+        { g: 'EO', outcome: 'BB', desc: 'Walk', xy: FIELD.HOME },
+        { g: 'BCD', outcome: 'OUT', contact: 'GB', desc: 'Ground out to 3B', xy: nudge(FIELD.THIRD_BASE, 2) },
+        { g: 'BCD', outcome: 'HIT', contact: 'LD', desc: 'Line drive single to CF', xy: [200, 115] }
+      ]
+    },
+    {
+      id: 'eduardoG', pos: 8, number: 27, name: 'Eduardo G', role: 'CF / SS',
+      stats: { ab: 3, h: 2, bb: 1, k: 0 },
+      tags: ['bunt', 'patient', 'runner'],
+      summary: 'Right field / Center · BUNTS · Patient · Top base stealer',
+      details: [
+        'Smart, versatile hitter',
+        'WILL BUNT — be alert with 3B and 1B',
+        'Drives to RF on fly balls',
+        'Most productive bat per AB',
+        'Active base stealer including home'
+      ],
+      atBats: [
+        { g: 'EO', outcome: 'HIT', contact: 'FB', desc: 'Fly ball single to RF', xy: [320, 130] },
+        { g: 'EO', outcome: 'OUT', contact: 'FB', desc: 'FC (fly ball) to CF', xy: [215, 150] },
+        { g: 'BCD', outcome: 'BUNT', desc: 'Bunt single to 3B', xy: FIELD.BUNT_3B, isBunt: true, isHit: true },
+        { g: 'BCD', outcome: 'BB', desc: 'Walk', xy: FIELD.HOME }
+      ]
+    },
+    {
+      id: 'alejandroM', pos: 9, number: 12, name: 'Alejandro M', role: 'LF',
+      stats: { ab: 3, h: 0, bb: 0, k: 1 },
+      tags: ['bunt', 'k'],
+      summary: 'Right side / Middle · BUNTS · K candidate',
+      details: [
+        'WILL BUNT — be alert',
+        'Strikeout candidate',
+        'Weak contact when he makes it'
+      ],
+      atBats: [
+        { g: 'EO', outcome: 'K', desc: 'K looking', xy: FIELD.HOME },
+        { g: 'EO', outcome: 'OUT', contact: 'LD', desc: 'Line out to 2B', xy: [220, 240] },
+        { g: 'BCD', outcome: 'BUNT', desc: 'Bunt out to P', xy: FIELD.BUNT_P, isBunt: true, isHit: false }
+      ]
+    }
+  ],
+  subs: [
+    {
+      id: 'matthewD', pos: 1, number: 22, name: 'Matthew D', role: 'RF',
+      stats: { ab: 2, h: 0, bb: 2, k: 1 },
+      tags: ['runner'],
+      summary: 'Pull-side IF / K · Often used as COURTESY RUNNER',
+      details: [
+        'Subs in for RF or as courtesy runner',
+        'Steals bases',
+        'Weak contact: pulled grounder + K'
+      ],
+      atBats: [
+        { g: 'EO', outcome: 'OUT', contact: 'GB', desc: 'Ground out to SS (sub for Jose C in 6th)', xy: nudge(FIELD.SS, 4) },
+        { g: 'STM', outcome: 'K', desc: 'K swinging', xy: FIELD.HOME },
+        { g: 'STM', outcome: 'BB', desc: 'Walk \u2014 scored on passed ball', xy: FIELD.HOME },
+        { g: 'BCD', outcome: 'BB', desc: 'Walk \u2014 scored on passed ball (stole 2B)', xy: FIELD.HOME }
+      ]
+    },
+    {
+      id: 'asherA', pos: 2, number: 24, name: 'Asher A', role: '3B',
+      stats: { ab: 3, h: 0, bb: 0, k: 1 },
+      tags: [],
+      summary: 'Pull side / Middle · Weak contact across the board',
+      details: [
+        'Weak contact in every AB',
+        'No hits across 3 ABs',
+        'Pull-side grounders or weak fly'
+      ],
+      atBats: [
+        { g: 'STM', outcome: 'K', desc: 'K swinging', xy: FIELD.HOME },
+        { g: 'STM', outcome: 'OUT', contact: 'FB', desc: 'Pop out to pitcher', xy: nudge(FIELD.PITCHER, 2) },
+        { g: 'BCD', outcome: 'OUT', contact: 'GB', desc: 'Ground out to 3B (sub for Christian Z in 6th)', xy: nudge(FIELD.THIRD_BASE, 3) }
+      ]
+    },
+    {
+      id: 'joseC', pos: 3, number: 21, name: 'Jose C', role: 'RF',
+      stats: { ab: 1, h: 0, bb: 1, k: 1 },
+      tags: ['k'],
+      summary: 'Extremely limited data · K candidate',
+      details: [
+        'Only 1 AB against quality pitching (K looking)',
+        'Walked in his other appearance',
+        'Used as backup at RF'
+      ],
+      atBats: [
+        { g: 'EO', outcome: 'K', desc: 'K looking (started at 9, subbed out in 6th)', xy: FIELD.HOME },
+        { g: 'STM', outcome: 'BB', desc: 'Walk (sub for Asher A in 5th)', xy: FIELD.HOME }
+      ]
+    }
+  ]
+};
+
+// =================== STATE ===================
+let mode = 'starters'; // or 'subs'
+let currentIdx = 0;
+
+// Today's at-bats: { playerId: [{ outcome, contact, loc, xy, ts }] }
+const STORAGE_KEY = 'altamonte_today_v1';
+const RESET_KEY = 'altamonte_reset_date';
+
+function loadToday() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch(e) { return {}; }
+}
+function saveToday(data) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e) {}
+}
+let today = loadToday();
+
+// =================== RENDER ===================
+function setMode(m) {
+  mode = m;
+  currentIdx = 0;
+  document.getElementById('tab-starters').classList.toggle('active', m === 'starters');
+  document.getElementById('tab-subs').classList.toggle('active', m === 'subs');
+  render();
+}
+
+function currentRoster() { return PLAYERS[mode]; }
+function currentPlayer() { return currentRoster()[currentIdx]; }
+
+function renderLineup() {
+  const el = document.getElementById('lineup');
+  el.className = 'lineup' + (mode === 'subs' ? ' subs-mode' : '');
+  const roster = currentRoster();
+  el.innerHTML = roster.map((p, i) => `
+    <button class="slot ${i === currentIdx ? 'active' : ''}" onclick="selectIdx(${i})">
+      ${p.pos}<span class="num">#${p.number}</span>
+    </button>
+  `).join('');
+}
+
+function selectIdx(i) {
+  currentIdx = i;
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function nav(dir) {
+  const roster = currentRoster();
+  currentIdx = Math.max(0, Math.min(roster.length - 1, currentIdx + dir));
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function tagHTML(tags) {
+  const map = {
+    power: { cls: 'power', label: '⚡ POWER' },
+    bunt: { cls: 'bunt', label: '🔻 BUNT' },
+    k: { cls: 'k', label: 'K CANDIDATE' },
+    runner: { cls: 'runner', label: '🏃 RUNNER' },
+    patient: { cls: 'patient', label: 'PATIENT' }
+  };
+  return tags.map(t => {
+    const m = map[t]; if (!m) return '';
+    return `<span class="tag ${m.cls}">${m.label}</span>`;
+  }).join('');
+}
+
+function abClass(ab) {
+  if (ab.outcome === 'HIT' || ab.isHit) return 'hit';
+  if (ab.outcome === 'OUT') return 'out';
+  if (ab.outcome === 'BUNT') return ab.isHit ? 'hit' : 'bunt';
+  if (ab.outcome === 'K') return 'k';
+  if (ab.outcome === 'BB' || ab.outcome === 'HBP') return 'bb';
+  return '';
+}
+
+function liveStats(playerId, baseStats) {
+  const live = today[playerId] || [];
+  let extra = { ab: 0, h: 0, bb: 0, k: 0 };
+  for (const ab of live) {
+    if (ab.outcome === 'BB' || ab.outcome === 'HBP') extra.bb++;
+    else { extra.ab++; if (ab.outcome === 'HIT' || ab.isHit) extra.h++; if (ab.outcome === 'K') extra.k++; }
+  }
+  return {
+    ab: baseStats.ab + extra.ab,
+    h: baseStats.h + extra.h,
+    bb: baseStats.bb + extra.bb,
+    k: baseStats.k + extra.k,
+    extra: extra,
+    liveCount: live.length
+  };
+}
+
+function gameLabel(g) {
+  const map = { EO: 'EO', BCD: 'BCD', STM: 'STM', GTR: 'GTR', LIVE: 'TODAY' };
+  return map[g] || g;
+}
+
+function drawField() {
+  // SVG showing baseball field from catcher's view
+  return `
+    <svg viewBox="0 0 400 440" preserveAspectRatio="xMidYMid meet">
+      <!-- Outfield (grass) -->
+      <path d="M 200 400 L 40 60 Q 200 -20 360 60 Z" fill="#bbf7d0" stroke="#86efac" stroke-width="1"/>
+      <!-- Infield -->
+      <path d="M 200 400 L 95 295 L 200 195 L 305 295 Z" fill="#fde68a" stroke="#fbbf24" stroke-width="1"/>
+      <!-- Foul lines -->
+      <line x1="200" y1="400" x2="40" y2="60" stroke="#475569" stroke-width="1.5"/>
+      <line x1="200" y1="400" x2="360" y2="60" stroke="#475569" stroke-width="1.5"/>
+      <!-- Outfield arc -->
+      <path d="M 40 60 Q 200 -20 360 60" fill="none" stroke="#475569" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <!-- Bases -->
+      <rect x="195" y="395" width="10" height="10" transform="rotate(45 200 400)" fill="white" stroke="#1e293b" stroke-width="1.5"/>
+      <rect x="300" y="290" width="10" height="10" fill="white" stroke="#1e293b" stroke-width="1.5"/>
+      <rect x="195" y="190" width="10" height="10" fill="white" stroke="#1e293b" stroke-width="1.5"/>
+      <rect x="90" y="290" width="10" height="10" fill="white" stroke="#1e293b" stroke-width="1.5"/>
+      <!-- Mound -->
+      <circle cx="200" cy="305" r="9" fill="#fde68a" stroke="#1e293b" stroke-width="1"/>
+      <!-- Position labels -->
+      <text x="70" y="115" font-size="13" font-weight="700" fill="#475569">LF</text>
+      <text x="190" y="80" font-size="13" font-weight="700" fill="#475569">CF</text>
+      <text x="312" y="115" font-size="13" font-weight="700" fill="#475569">RF</text>
+      <g id="markers"></g>
+    </svg>
+  `;
+}
+
+function markerHTML(ab, idx, isToday) {
+  const xy = ab.xy;
+  if (!xy) return '';
+  let color, shape;
+  const isHit = ab.outcome === 'HIT' || ab.isHit;
+  const isOut = ab.outcome === 'OUT' || (ab.outcome === 'BUNT' && !ab.isHit);
+
+  if (ab.outcome === 'K') color = '#475569';
+  else if (ab.outcome === 'BB' || ab.outcome === 'HBP') color = '#0891b2';
+  else if (ab.outcome === 'BUNT' && ab.isHit) color = '#ea580c';
+  else if (ab.outcome === 'BUNT') color = '#9a3412';
+  else if (isHit) color = '#15803d';
+  else color = '#b91c1c';
+
+  const stroke = isToday ? '#0ea5e9' : 'white';
+  const strokeWidth = isToday ? 3 : 1.5;
+  const r = isToday ? 10 : 8;
+
+  // K and BB at home plate area - cluster them
+  if (ab.outcome === 'K') {
+    const kx = xy[0] - 12 + (idx * 7);
+    const ky = xy[1] + 18;
+    return `
+      <g>
+        <circle cx="${kx}" cy="${ky}" r="${r}" fill="${color}" stroke="${stroke}" stroke-width="${strokeWidth}" opacity="0.95"/>
+        <text x="${kx}" y="${ky + 4}" font-size="11" font-weight="900" text-anchor="middle" fill="white">K</text>
+      </g>`;
+  }
+  if (ab.outcome === 'BB' || ab.outcome === 'HBP') {
+    const bx = xy[0] - 30;
+    const by = xy[1] + 25 + (idx * 2);
+    return `
+      <g>
+        <circle cx="${bx}" cy="${by}" r="${r}" fill="${color}" stroke="${stroke}" stroke-width="${strokeWidth}" opacity="0.95"/>
+        <text x="${bx}" y="${by + 4}" font-size="9" font-weight="900" text-anchor="middle" fill="white">BB</text>
+      </g>`;
+  }
+
+  // Contact-based shape
+  const contact = ab.contact || (ab.outcome === 'BUNT' ? 'BUNT' : 'OTHER');
+  if (contact === 'BUNT' || ab.outcome === 'BUNT') {
+    // Diamond
+    const s = isToday ? 11 : 9;
+    return `<polygon points="${xy[0]},${xy[1]-s} ${xy[0]+s},${xy[1]} ${xy[0]},${xy[1]+s} ${xy[0]-s},${xy[1]}"
+      fill="${color}" stroke="${stroke}" stroke-width="${strokeWidth}"/>`;
+  }
+  if (contact === 'LD') {
+    // Triangle (line drive)
+    const s = isToday ? 11 : 9;
+    return `<polygon points="${xy[0]},${xy[1]-s} ${xy[0]+s},${xy[1]+s*0.7} ${xy[0]-s},${xy[1]+s*0.7}"
+      fill="${color}" stroke="${stroke}" stroke-width="${strokeWidth}"/>`;
+  }
+  if (contact === 'FB') {
+    // Open circle (fly/pop)
+    return `<circle cx="${xy[0]}" cy="${xy[1]}" r="${r}" fill="white" stroke="${color}" stroke-width="${strokeWidth + 1}"/>`;
+  }
+  // Default: filled circle (ground ball)
+  return `<circle cx="${xy[0]}" cy="${xy[1]}" r="${r}" fill="${color}" stroke="${stroke}" stroke-width="${strokeWidth}"/>`;
+}
+
+function render() {
+  renderLineup();
+  const p = currentPlayer();
+  if (!p) return;
+  const live = today[p.id] || [];
+  const stats = liveStats(p.id, p.stats);
+
+  // Combine scouting + today's ABs
+  const allABs = [
+    ...p.atBats.map(function(a){ return Object.assign({}, a, { isToday: false }); }),
+    ...live.map(function(a){ return Object.assign({}, a, { isToday: true, g: 'LIVE' }); })
+  ];
+
+  // Build markers
+  const markers = allABs.map((a, i) => markerHTML(a, i, a.isToday)).join('');
+
+  const tagsHTML = p.tags.length ? `<div class="tags">${tagHTML(p.tags)}</div>` : '';
+
+  const liveBadge = stats.liveCount > 0
+    ? `<span style="background:#0ea5e9;color:white;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:800;">${stats.liveCount} TODAY</span>`
+    : '';
+
+  const card = document.getElementById('card');
+  card.innerHTML = `
+    <div class="card-head">
+      <div class="player-number">${p.pos}</div>
+      <div class="player-meta">
+        <div class="player-name">${p.name} <span style="opacity:0.7;font-weight:700;">#${p.number}</span></div>
+        <div class="player-role">${p.role}</div>
+      </div>
+      ${tagsHTML}
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-label">AB</div>
+        <div class="stat-value">${stats.ab}</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">H</div>
+        <div class="stat-value" style="color:#16a34a;">${stats.h}</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">BB</div>
+        <div class="stat-value" style="color:#0891b2;">${stats.bb}</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">K</div>
+        <div class="stat-value" style="color:#dc2626;">${stats.k}</div>
+      </div>
+    </div>
+
+    <div class="summary">${p.summary}</div>
+
+    <div class="chart-section">
+      <div class="section-label">
+        <span>Spray Chart</span>
+        ${liveBadge}
+      </div>
+      <div class="chart-wrap">
+        ${drawField().replace('<g id="markers"></g>', `<g id="markers">${markers}</g>`)}
+      </div>
+      <div class="legend">
+        <div class="legend-item"><span class="swatch circle" style="background:#15803d;"></span>Hit (GB)</div>
+        <div class="legend-item"><span class="swatch circle" style="background:#b91c1c;"></span>Out (GB)</div>
+        <div class="legend-item"><span class="swatch triangle" style="border-bottom-color:#15803d;"></span>Hit (LD)</div>
+        <div class="legend-item"><span class="swatch triangle" style="border-bottom-color:#b91c1c;"></span>Out (LD)</div>
+        <div class="legend-item"><span class="swatch circle" style="background:white;border:2px solid #b91c1c;width:10px;height:10px;"></span>Fly/Pop</div>
+        <div class="legend-item"><span class="swatch diamond" style="background:#ea580c;"></span>Bunt</div>
+        <div class="legend-item"><span class="swatch circle" style="background:#475569;"></span>K (home)</div>
+        <div class="legend-item"><span style="color:#0ea5e9;font-weight:900;">○ Blue ring</span> = today</div>
+      </div>
+    </div>
+
+    <div class="tendencies">
+      <ul>${p.details.map(d => `<li>${d}</li>`).join('')}</ul>
+    </div>
+
+    <button class="collapse-trigger" onclick="toggleCollapse(this)">
+      At-bat log (${p.atBats.length + live.length})
+    </button>
+    <div class="collapse-content">
+      ${live.map((a, i) => `
+        <div class="ab-row ${abClass(a)} today">
+          <div>${a.desc || ''} ${a.loc ? `<span style="opacity:0.7;font-size:12px;">→ ${a.loc}</span>` : ''}</div>
+          <span class="ab-game today">TODAY</span>
+        </div>
+      `).join('')}
+      ${p.atBats.map((a, i) => `
+        <div class="ab-row ${abClass(a)}">
+          <div>${a.desc}</div>
+          <span class="ab-game">${gameLabel(a.g)}</span>
+        </div>
+      `).join('')}
+    </div>
+
+    <div class="tracker-bar">
+      <div class="tracker-summary">
+        <span>Today: ${stats.liveCount} AB logged</span>
+        ${live.length > 0 ? `<span style="font-size:11px;"><button onclick="clearPlayerToday('${p.id}')" style="background:transparent;border:0;color:#94a3b8;font-size:11px;text-decoration:underline;cursor:pointer;">Clear</button></span>` : ''}
+      </div>
+      <button class="log-btn" onclick="openModal('${p.id}')">+ LOG AT-BAT</button>
+    </div>
+  `;
+
+  document.getElementById('prev-btn').disabled = currentIdx === 0;
+  document.getElementById('next-btn').disabled = currentIdx === currentRoster().length - 1;
+}
+
+function toggleCollapse(btn) {
+  btn.classList.toggle('open');
+  btn.nextElementSibling.classList.toggle('open');
+}
+
+// =================== MODAL ===================
+let modalState = { playerId: null, outcome: null, contact: null, loc: null, buntResult: null };
+
+function openModal(playerId) {
+  const p = currentRoster().find(x => x.id === playerId);
+  modalState = { playerId, outcome: null, contact: null, loc: null, buntResult: null };
+  document.getElementById('modal-title').textContent = 'Log AB: ' + p.name + ' #' + p.number;
+  document.getElementById('modal-sub').textContent = '#' + p.pos + ' in order · ' + p.role;
+  // Reset selections
+  Array.from(document.querySelectorAll('#outcome-grid .opt-btn')).forEach(b => b.classList.remove('selected'));
+  Array.from(document.querySelectorAll('#contact-grid .opt-btn')).forEach(b => b.classList.remove('selected'));
+  Array.from(document.querySelectorAll('#location-grid .opt-btn')).forEach(b => b.classList.remove('selected'));
+  Array.from(document.querySelectorAll('#bunt-result-grid .opt-btn')).forEach(b => b.classList.remove('selected'));
+  document.getElementById('contact-section').style.display = 'none';
+  document.getElementById('location-section').style.display = 'none';
+  document.getElementById('bunt-result-section').style.display = 'none';
+  document.getElementById('save-btn').disabled = true;
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+function closeModalIfBg(e) { if (e.target.id === 'modal') closeModal(); }
+
+// Outcome buttons
+Array.from(document.querySelectorAll('#outcome-grid .opt-btn')).forEach(btn => {
+  btn.addEventListener('click', () => {
+    Array.from(document.querySelectorAll('#outcome-grid .opt-btn')).forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    modalState.outcome = btn.dataset.outcome;
+    modalState.contact = null;
+    modalState.loc = null;
+    modalState.buntResult = null;
+    Array.from(document.querySelectorAll('#contact-grid .opt-btn')).forEach(b => b.classList.remove('selected'));
+    Array.from(document.querySelectorAll('#location-grid .opt-btn')).forEach(b => b.classList.remove('selected'));
+    Array.from(document.querySelectorAll('#bunt-result-grid .opt-btn')).forEach(b => b.classList.remove('selected'));
+
+    const needsContact = modalState.outcome === 'HIT' || modalState.outcome === 'OUT';
+    const needsLocation = modalState.outcome === 'HIT' || modalState.outcome === 'OUT' || modalState.outcome === 'BUNT';
+    const needsBuntResult = modalState.outcome === 'BUNT';
+    document.getElementById('contact-section').style.display = needsContact ? 'block' : 'none';
+    document.getElementById('location-section').style.display = needsLocation ? 'block' : 'none';
+    document.getElementById('bunt-result-section').style.display = needsBuntResult ? 'block' : 'none';
+
+    updateSaveBtn();
+  });
+});
+
+Array.from(document.querySelectorAll('#bunt-result-grid .opt-btn')).forEach(btn => {
+  btn.addEventListener('click', () => {
+    Array.from(document.querySelectorAll('#bunt-result-grid .opt-btn')).forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    modalState.buntResult = btn.dataset.buntresult;
+    updateSaveBtn();
+  });
+});
+
+Array.from(document.querySelectorAll('#contact-grid .opt-btn')).forEach(btn => {
+  btn.addEventListener('click', () => {
+    Array.from(document.querySelectorAll('#contact-grid .opt-btn')).forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    modalState.contact = btn.dataset.contact;
+    updateSaveBtn();
+  });
+});
+
+Array.from(document.querySelectorAll('#location-grid .opt-btn')).forEach(btn => {
+  btn.addEventListener('click', () => {
+    Array.from(document.querySelectorAll('#location-grid .opt-btn')).forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    modalState.loc = btn.dataset.loc;
+    updateSaveBtn();
+  });
+});
+
+function updateSaveBtn() {
+  const s = modalState;
+  let valid = false;
+  if (s.outcome === 'K' || s.outcome === 'BB' || s.outcome === 'HBP') valid = true;
+  else if (s.outcome === 'HIT' || s.outcome === 'OUT') valid = s.contact && s.loc;
+  else if (s.outcome === 'BUNT') valid = !!s.loc && !!s.buntResult;
+  document.getElementById('save-btn').disabled = !valid;
+}
+
+function locToXY(loc) {
+  const map = {
+    LF: FIELD.DEEP_LF, CF: FIELD.DEEP_CF, RF: FIELD.DEEP_RF,
+    '3B': FIELD.THIRD_BASE, SS: FIELD.SS, '2B': FIELD.BETWEEN_FIRST_SECOND,
+    '1B': FIELD.FIRST_BASE, P: FIELD.PITCHER, C: FIELD.BEHIND_HOME
+  };
+  return map[loc] || FIELD.HOME;
+}
+
+function saveAB() {
+  const s = modalState;
+  if (!s.playerId) return;
+  let xy = FIELD.HOME;
+  let desc = '';
+  let isHit = false;
+
+  if (s.outcome === 'K') desc = 'K';
+  else if (s.outcome === 'BB') desc = 'Walk';
+  else if (s.outcome === 'HBP') desc = 'Hit by pitch';
+  else if (s.outcome === 'BUNT') {
+    isHit = (s.buntResult === 'SAFE');
+    desc = 'Bunt ' + (isHit ? 'single' : 'out') + ' to ' + s.loc;
+    xy = nudge(locToXY(s.loc), Math.floor(Math.random() * 6));
+    // Shift bunts toward home plate area
+    if (xy[1] < 350) xy = [xy[0], 365 + Math.random() * 10];
+  } else {
+    isHit = s.outcome === 'HIT';
+    desc = (isHit ? 'Hit' : 'Out') + ' (' + s.contact + ') to ' + s.loc;
+    xy = nudge(locToXY(s.loc), Math.floor(Math.random() * 6));
+  }
+
+  const ab = {
+    outcome: s.outcome,
+    contact: s.contact,
+    loc: s.loc,
+    xy: xy,
+    desc: desc,
+    isHit: isHit,
+    ts: Date.now()
+  };
+
+  if (!today[s.playerId]) today[s.playerId] = [];
+  today[s.playerId].push(ab);
+  saveToday(today);
+  closeModal();
+  render();
+}
+
+function clearPlayerToday(pid) {
+  if (!confirm('Clear today\u2019s logged ABs for this batter?')) return;
+  delete today[pid];
+  saveToday(today);
+  render();
+}
+
+function resetGame() {
+  if (!confirm('Clear ALL today\u2019s at-bats for ALL batters? This cannot be undone.')) return;
+  today = {};
+  saveToday(today);
+  render();
+}
+
+// Init
+render();
+</script>
+</body>
+</html>
